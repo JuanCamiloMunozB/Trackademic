@@ -13,6 +13,7 @@ public class Group {
   private Integer number;
 
   @Id
+  @Column(name = "subject_code")
   private String subjectCode;
 
   @Id
@@ -20,7 +21,7 @@ public class Group {
 
   // Este campo se ignora al guardar; solo sirve para navegación
   @ManyToOne
-  @JoinColumn(name = "subject_code", insertable = false, updatable = false)
+  @JoinColumn(name = "subject_code", referencedColumnName = "code", insertable = false, updatable = false)
   private Subject subject;
 
   @ManyToOne
