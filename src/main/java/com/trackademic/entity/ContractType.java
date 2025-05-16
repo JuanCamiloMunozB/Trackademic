@@ -11,4 +11,7 @@ import java.util.*;
 public class ContractType {
   @Id
   private String name;
+
+  @OneToMany(mappedBy = "contractType", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Employee> employees = List.of();
 }

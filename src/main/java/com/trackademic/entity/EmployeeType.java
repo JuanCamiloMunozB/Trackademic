@@ -11,4 +11,7 @@ import java.util.*;
 public class EmployeeType {
   @Id
   private String name;
+
+  @OneToMany(mappedBy = "employeeType", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Employee> employees = List.of();
 }
