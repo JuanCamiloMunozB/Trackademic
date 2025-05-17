@@ -25,7 +25,7 @@ public class Faculty {
   private String phoneNumber;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "dean_id", nullable = false)
+  @JoinColumn(name = "dean_id", nullable = true)
   private Employee dean;
 
   @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
