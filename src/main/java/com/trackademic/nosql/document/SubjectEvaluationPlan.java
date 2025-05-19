@@ -22,6 +22,5 @@ public class SubjectEvaluationPlan {
 
   private String professor;
 
-  /** opcional: si quieres embebed activities */
   private List<Activity> activities;
 }

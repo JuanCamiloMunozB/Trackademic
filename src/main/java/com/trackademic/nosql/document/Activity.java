@@ -8,5 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class Activity {
   private String name;
+  private double grade;
   private double percentage;
 }
