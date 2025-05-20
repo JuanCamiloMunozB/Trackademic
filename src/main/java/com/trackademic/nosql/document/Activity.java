@@ -7,7 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Activity {
+
   private String name;
   private double grade;
   private double percentage;
+  
 }

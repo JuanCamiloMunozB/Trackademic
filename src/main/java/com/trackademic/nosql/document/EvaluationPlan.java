@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Document("evaluation_plan")
 public class EvaluationPlan {
+
   @Id
   private ObjectId id;
 
