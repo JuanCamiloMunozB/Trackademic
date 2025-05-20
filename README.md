@@ -62,6 +62,10 @@ psql -h caboose.proxy.rlwy.net -p 45135 -U postgres -d railway
 Cuando solicite la contraseña, ingrese:  
 `cQNaFJywkdHPzUFmlfauUSQRSXSiAphl`
 
+Tambien puedes conectarte con PgAdmin:
+
+- Los pasos a seguir los puedes encontrar en [docs/Conexion pgAdmin](docs/Conexion%20pgAdmin.pdf).
+
 ## 🚀 Ejecución de la Aplicación
 
 1. **Clonar el repositorio**:
