@@ -5,6 +5,7 @@ import java.util.*;
 
 
 @Entity
+
 @Table(name = "cities")
 @Data
 @NoArgsConstructor

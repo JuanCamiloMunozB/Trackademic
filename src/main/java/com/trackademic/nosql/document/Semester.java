@@ -13,7 +13,7 @@ import java.util.List;
 @Document("semester")
 public class Semester {
   @Id
-  private String id;            
+  private String id;
 
   @Field("student_id")
   private String studentId;
