@@ -1,23 +1,95 @@
-# Trackademic
+# Trackademic - Sistema de Gestión de Notas Académicas
 
-### Grupo
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+Aplicación Spring Boot para gestionar planes de evaluación, notas académicas y comentarios colaborativos, desarrollada como proyecto final para la materia *Sistemas Intensivos en Datos II*.
+
+## 👥 Equipo de Desarrollo
 - **Juan David Acevedo**
 - **Jose Manuel Cardona**
 - **Andres Chamorro**
 - **Oscar Muñoz**
 - **Juan Camilo Muñoz**
 
-Antes de ejecutar el proyecto, asegúrate de tener instalado PostgreSQL y haber creado la base de datos `trackademic_db` con el siguiente comando:
-```sql
-create user track_user with password '123456';
-create database trackademic_db owner track_user;
-grant connect on database trackademic_db to track_user;
-```
-Luego, cambia el archivo `application.properties` en `src/main/resources` para que cuando corras por primera vez la aplicación, se creen las tablas automáticamente. Cambia la propiedad `spring.sql.init.mode` a `always`:
+## 📌 Características Principales
+- **Persistencia Poliglota**: 
+  - **PostgreSQL**: Datos estructurados (empleados, facultades, grupos).
+  - **MongoDB**: Datos semi-estructurados (planes de evaluación, comentarios, semestres).
+- **Requerimientos Funcionales**: Los puedes encontrar en [docs/requirements.md](docs/requirements.md).
+
+## 🛠 Tecnologías Utilizadas
+- **Backend**: Spring Boot 3.4.5
+- **Bases de Datos**: MongoDB y PostgreSQL
+- **Herramientas**: Lombok, Spring Data JPA, Spring Data MongoDB
+- **Despliegue**: Bases de datos alojadas en MongoDB Atlas y Railway (PostgreSQL).
+
+## 🗄 Modelado de Datos
+
+### Modelo Relacional (PostgreSQL)
+![Diagrama relacional](docs/models/RelationalModel.jpeg)
+
+### Modelo de Documentos (MongoDB)
+![Diagrama de documentos](docs/models/MongoModel.jpeg)
+
+## ⚙ Configuración y Acceso a Bases de Datos
+
+### Credenciales de Conexión (application.properties)
 ```properties
-spring.sql.init.mode=always
+# MongoDB
+spring.data.mongodb.uri=mongodb://mongo:IwJvnHxCPXRMXumoDbkEAeRhBjyyUStF@mainline.proxy.rlwy.net:52476
+spring.data.mongodb.database=trackademic
+
+# PostgreSQL
+spring.datasource.url=jdbc:postgresql://caboose.proxy.rlwy.net:45135/railway
+spring.datasource.username=postgres
+spring.datasource.password=cQNaFJywkdHPzUFmlfauUSQRSXSiAphl
 ```
-Para las proximas ejecuciones, puedes cambiarla a `never` para evitar que se creen las tablas nuevamente:
-```properties
-spring.sql.init.mode=never
+
+### Conexión Externa a las Bases de Datos
+
+#### 1. **MongoDB** (usando `mongosh`):
+```bash
+mongosh 'mongodb://mongo:IwJvnHxCPXRMXumoDbkEAeRhBjyyUStF@mainline.proxy.rlwy.net:52476/trackademic?authSource=admin'
+use trackademic
 ```
+
+#### 2. **PostgreSQL** (usando `psql`):
+```bash
+psql -h caboose.proxy.rlwy.net -p 45135 -U postgres -d railway
+```
+Cuando solicite la contraseña, ingrese:  
+`cQNaFJywkdHPzUFmlfauUSQRSXSiAphl`
+
+## 🚀 Ejecución de la Aplicación
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/tu-usuario/Trackademic.git
+   cd Trackademic
+   ```
+
+2. **Instalar dependencias**:
+   ```bash
+    # Opción 1: Usando el wrapper de Maven
+    ./mvnw clean install
+    # Opción 2: Con Maven instalado globalmente
+    mvn clean install
+    ```
+    Asegúrate de tener Java 17 o superior instalado.
+
+2. **Ejecutar con Maven**:
+   ```bash
+   # Opción 1: Usando el wrapper de Maven
+   ./mvnw spring-boot:run
+
+   # Opción 2: Con Maven instalado globalmente
+   mvn spring-boot:run
+   ```
+
+3. **Acceder a la aplicación**:
+   Abre tu navegador y dirígete a la siguiente URL:
+   ```bash
+   http://localhost:8080/Trackademic/
+   ```
