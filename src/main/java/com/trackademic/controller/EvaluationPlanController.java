@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.bson.types.ObjectId; // Need ObjectId for studentId filter if used elsewhere
 
 import java.util.List;
+
+import java.util.Optional; // Import Optional
+
 
 @Controller
 @RequestMapping("/evaluation-plans") // Assuming this is the base path
@@ -60,6 +64,30 @@ public class EvaluationPlanController {
         model.addAttribute("evaluationPlans", evaluationPlans);
 
         return "evaluation-plans"; 
+    }
+
+    @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
+    public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
+        // 1. Fetch the EvaluationPlan by ID from MongoDB
+        Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
+
+        if (planOptional.isPresent()) {
+            EvaluationPlan plan = planOptional.get();
+            model.addAttribute("plan", plan); // Add the found plan to the model
+
+            // Optional: Fetch related data from PostgreSQL if needed (e.g., full professor details)
+            // Optional<Employee> professor = academicDataService.getEmployeeById(plan.getProfessorId()); // If you store professorId in Mongo
+            // model.addAttribute("professorDetails", professor.orElse(null));
+
+            return "evaluation-plan-detail"; // Return the name of the detail template
+        } else {
+            // Handle case where plan is not found (e.g., show an error page or redirect)
+            // For simplicity, let's add an error message and return a view
+            model.addAttribute("errorMessage", "Evaluation Plan with ID " + id + " not found.");
+            return "error-page"; // You would need to create an error-page.html template
+             // Or redirect back to the list with an error parameter
+             // return "redirect:/evaluation-plans/search?error=plan_not_found";
+        }
     }
 
 }

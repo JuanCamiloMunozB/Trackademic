@@ -10,6 +10,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional; // Keep Optional
+
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +76,10 @@ public class EvaluationPlanService {
                 semester
         );
 
+    }
+
+    public Optional<EvaluationPlan> getEvaluationPlanById(ObjectId id) {
+        return evaluationPlanRepository.findById(id);
     }
 
     
