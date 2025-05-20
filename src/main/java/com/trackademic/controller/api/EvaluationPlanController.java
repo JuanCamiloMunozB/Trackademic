@@ -31,25 +31,19 @@ public class EvaluationPlanController {
     @Autowired
     private  CommentService commentService;
 
-    @Autowired
-    public EvaluationPlanController(EvaluationPlanService evaluationPlanService) {
-        this.evaluationPlanService = evaluationPlanService;
-    }
-
   
     @GetMapping
     public String listAll(Model model) {
         model.addAttribute("plans", evaluationPlanService.getAllEvaluationPlans());
-        return "evaluation_plans/list";
+        return "evaluation-plans";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("plan", new EvaluationPlan());
-        return "evaluation_plans/create";
+        return "evaluation-plans/create";
     }
 
-  
     @PostMapping("/create")
     public String create(@ModelAttribute("plan") EvaluationPlan plan) {
         evaluationPlanService.createEvaluationPlan(plan);
