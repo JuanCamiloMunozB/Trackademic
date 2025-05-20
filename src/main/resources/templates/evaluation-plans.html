@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluation Plans</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        table { border-collapse: collapse; margin-top: 20px; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .filter-form { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f2f2; }
+        .filter-form label { margin-right: 10px; font-weight: bold; }
+        .filter-form select, .filter-form input[type="text"] { margin-right: 15px; padding: 5px; border: 1px solid #ccc; }
+        .filter-form button { padding: 8px 15px; background-color: #5cb85c; color: white; border: none; cursor: pointer; border-radius: 4px; }
+         .filter-form button:hover { background-color: #4cae4c; }
+         .filter-form button[type="button"] { background-color: #f0ad4e; }
+         .filter-form button[type="button"]:hover { background-color: #ec971f; }
+         .filter-element { margin-right: 20px; display: inline-block; vertical-align: top; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Evaluation Plan Templates</h1>
+
+    <div class="filter-form">
+        <h2>Filter Plans</h2>
+        <form id="filterForm" method="get" th:action="@{/evaluation-plans/search}">
+
+            <div class="filter-element">
+                <label for="subjectCodeInput">Subject Code:</label>
+                <input type="text" id="subjectCodeInput" name="subjectCode" th:value="${selectedSubjectCode}" placeholder="Enter Subject Code" style="text-transform: uppercase;"/>
+            </div>
+
+            <div class="filter-element">
+                 <label for="subjectNameSelect">Subject Name:</label>
+                 <select id="subjectNameSelect" name="subjectName">
+                      <option value="">-- Select Subject Name --</option>
+                       <option th:each="subject : ${subjects}"
+                               th:value="${subject.name}"
+                               th:text="${subject.name}"
+                               th:selected="${subject.name == selectedSubjectName}"></option>
+                  </select>
+            </div>
+
+            <div class="filter-element">
+                <label for="groupSelect">Group Number:</label>
+                 <select id="groupSelect" name="groupId">
+                     <option value="">-- Select Group Number --</option>
+                     <!-- Display group info for better context -->
+                     <option th:each="group : ${groups}"
+                             th:value="${group.number}"
+                             th:text="'Group ' + ${group.number} + ' (' + ${group.subjectCode} + ', ' + ${group.semester} + ')'"
+                             th:selected="${group.number != null and group.number.toString() == selectedGroupId}"></option>
+                 </select>
+            </div>
+
+            <div class="filter-element">
+                 <label for="professorSelect">Professor:</label>
+                  <select id="professorSelect" name="professorId">
+                      <option value="">-- Select Professor --</option>
+                      <option th:each="professor : ${professors}"
+                              th:value="${professor.id}"
+                              th:text="${professor.firstName} + ' ' + ${professor.lastName}"
+                              th:selected="${professor.id == selectedProfessorId}"></option>
+                  </select>
+            </div>
+
+            <div class="filter-element">
+                <label for="semesterSelect">Semester:</label>
+                 <select id="semesterSelect" name="semester">
+                     <option value="">-- Select Semester --</option>
+                     <option th:each="sem : ${semestersList}"
+                             th:value="${sem}"
+                             th:text="${sem}"
+                             th:selected="${sem == selectedSemester}"></option>
+                 </select>
+            </div>
+             <br/>
+            <button type="submit">Search/Filter</button>
+             <button type="button" onclick="resetForm()">Reset</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Group ID</th>
+                <th>Professor</th>
+                <th>Semester</th>
+                <th>Activities</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="plan : ${evaluationPlans}">
+                <td th:text="${plan.subjectCode}">Subject Code</td>
+                <td th:text="${plan.subjectName}">Subject Name</td>
+                <td th:text="${plan.groupId}">Group ID</td>
+                <td th:text="${plan.professor}">Professor Name</td>
+                <td th:text="${plan.semester}">Semester</td>
+                <td>
+                    <ul>
+                        <li th:each="activity : ${plan.activities}">
+                            <span th:text="${activity.name}">Activity Name</span>
+                            (<span th:text="${activity.percentage}">%</span>% - Grade: <span th:text="${activity.grade}">Grade</span>)
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+             <tr th:if="${evaluationPlans.empty}">
+                  <td colspan="6">No evaluation plans found matching the criteria.</td>
+              </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const subjectCodeInput = document.getElementById("subjectCodeInput");
+
+        if (subjectCodeInput) {
+            subjectCodeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
+
+
+        function resetForm() {
+            document.getElementById("subjectCodeInput").value = "";
+
+            document.getElementById("subjectNameSelect").value = "";
+            document.getElementById("groupSelect").value = "";
+            document.getElementById("professorSelect").value = "";
+            document.getElementById("semesterSelect").value = "";
+
+            document.getElementById("filterForm").submit();
+        }
+    </script>
+
+</body>
+</html>

@@ -95,6 +95,10 @@ INSERT INTO GROUPS (number, semester, subject_code, professor_id) VALUES
   (3, '2023-2', 'S103', '1004')
 ON CONFLICT (number, subject_code, semester) DO NOTHING;
 
+INSERT INTO GROUPS (number, semester, subject_code, professor_id) VALUES
+  (4, '2023-2', 'S104', '1002')
+ON CONFLICT (number, subject_code, semester) DO NOTHING;
+
 -- -- Insert Foreign Key Constraints
 -- ALTER TABLE AREAS ADD CONSTRAINT AREAS_EMPLOYEES_FK FOREIGN KEY (coordinator_id) REFERENCES EMPLOYEES (id);
 -- ALTER TABLE AREAS ADD CONSTRAINT AREAS_FACULTIES_FK FOREIGN KEY (faculty_code) REFERENCES FACULTIES (code);
