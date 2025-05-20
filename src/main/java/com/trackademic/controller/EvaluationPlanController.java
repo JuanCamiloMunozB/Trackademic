@@ -1,17 +1,23 @@
 // Example Controller class (replace with your actual controller class)
 package com.trackademic.controller;
-
+import com.trackademic.nosql.document.EvaluationPlan;
+import com.trackademic.nosql.document.Comment;
+import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.EvaluationPlanService;
 import com.trackademic.service.AcademicDataService;
-import com.trackademic.nosql.document.EvaluationPlan; // Assuming you need EvaluationPlan
+import com.trackademic.service.interfaces.CommentService; // Import the new CommentService interface
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.bson.types.ObjectId; // Need ObjectId for studentId filter if used elsewhere
+import org.springframework.web.bind.annotation.*;
+import org.bson.types.ObjectId;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Optional;
+
+
 
 import java.util.List;
 
@@ -21,6 +27,9 @@ import java.util.Optional; // Import Optional
 @Controller
 @RequestMapping("/evaluation-plans") // Assuming this is the base path
 public class EvaluationPlanController {
+
+    @Autowired
+    private CommentService commentService;
 
     @Autowired
     private EvaluationPlanService evaluationPlanService;
@@ -68,26 +77,53 @@ public class EvaluationPlanController {
 
     @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
     public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
-        // 1. Fetch the EvaluationPlan by ID from MongoDB
         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
 
         if (planOptional.isPresent()) {
             EvaluationPlan plan = planOptional.get();
             model.addAttribute("plan", plan); // Add the found plan to the model
 
-            // Optional: Fetch related data from PostgreSQL if needed (e.g., full professor details)
-            // Optional<Employee> professor = academicDataService.getEmployeeById(plan.getProfessorId()); // If you store professorId in Mongo
-            // model.addAttribute("professorDetails", professor.orElse(null));
+            // --- Fetch Comments for this plan using the new CommentService ---
+            List<Comment> comments = commentService.getCommentsByEvaluationPlanId(id);
+            model.addAttribute("comments", comments); // Add comments to the model
 
-            return "evaluation-plan-detail"; // Return the name of the detail template
+            return "evaluation-plan-detail";
         } else {
-            // Handle case where plan is not found (e.g., show an error page or redirect)
-            // For simplicity, let's add an error message and return a view
             model.addAttribute("errorMessage", "Evaluation Plan with ID " + id + " not found.");
-            return "error-page"; // You would need to create an error-page.html template
-             // Or redirect back to the list with an error parameter
-             // return "redirect:/evaluation-plans/search?error=plan_not_found";
+            return "error-page"; // Redirect to an error page or handle as appropriate
         }
     }
 
+
+    @PostMapping("/{id}/comments") // Maps to POST /evaluation-plans/{id}/comments
+    public String addComment(
+            @PathVariable("id") ObjectId id,
+            @RequestParam("comment") String commentText,
+            @AuthenticationPrincipal CustomUserDetail userDetail,
+            RedirectAttributes redirectAttributes
+    ) {
+        // Optional: Basic check if comment text is empty
+        if (commentText == null || commentText.trim().isEmpty()) {
+             redirectAttributes.addFlashAttribute("errorMessage", "Comment text cannot be empty.");
+             return "redirect:/evaluation-plans/" + id;
+        }
+
+
+         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
+
+         if (planOptional.isPresent()) {
+            String studentName = userDetail.getUsername();
+
+            commentService.addCommentToEvaluationPlan(id, studentName, commentText.trim()); 
+            redirectAttributes.addFlashAttribute("successMessage", "Comment added successfully!");
+
+            // Redirect back to the evaluation plan detail page
+            return "redirect:/evaluation-plans/" + id;
+         } else {
+             redirectAttributes.addFlashAttribute("errorMessage", "Could not add comment: Evaluation Plan not found.");
+             return "redirect:/evaluation-plans/search"; // Redirect to list or an error page
+         }
+    }
+
 }
+
