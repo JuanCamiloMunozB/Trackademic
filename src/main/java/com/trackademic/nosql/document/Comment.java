@@ -18,7 +18,6 @@ public class Comment {
   @Field("evaluation_plan_id")
   private ObjectId evaluationPlanId;
 
-  /** identifica al autor (puede ser studentId o nombre) */
   private String student;
 
   private String comment;
