@@ -28,7 +28,9 @@ public class EvaluationPlan {
   @Field("group_id")
   private String groupId;
 
+  @Field("professor")
   private String professor;
+  @Field("semester")
   private String semester;
 
   

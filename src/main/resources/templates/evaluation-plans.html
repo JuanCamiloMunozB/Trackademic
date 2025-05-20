@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trackademic | Planes de Evaluación</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/evaluation-plans.css}" />
+</head>
+<body>
+    <header class="py-3 border-bottom bg-white shadow-sm sticky-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h4 text-primary fw-bold mb-0">Trackademic</h1>
+            <nav>
+                 <a th:href="@{/dashboard}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Panel
+                 </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">Plantillas de Planes de Evaluación</h2>
+            <!-- Botón para crear un nuevo plan de evaluación -->
+            <a th:href="@{/evaluation-plans/create}" class="btn btn-primary create-plan-btn">
+                <i class="bi bi-plus-circle me-2"></i> Crear Plan de Evaluación
+            </a>
+        </div>
+
+        <div class="card card-custom mb-4 shadow-sm">
+            <div class="card-header card-header-custom">
+                <h3 class="h5 mb-0 fw-semibold">
+                    <i class="bi bi-funnel-fill card-title-icon"></i>
+                    Filtrar Planes
+                </h3>
+            </div>
+            <div class="card-body">
+                <form id="filterForm" method="get" th:action="@{/evaluation-plans/search}" class="filter-form">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6 col-lg-3">
+                            <label for="subjectCodeInput" class="form-label">Código de Asignatura:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                <input type="text" class="form-control" id="subjectCodeInput" name="subjectCode" th:value="${selectedSubjectCode}" placeholder="Ingresar código" style="text-transform: uppercase;"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-3">
+                             <label for="subjectNameSelect" class="form-label">Nombre de Asignatura:</label>
+                             <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-book"></i></span>
+                                <select class="form-select" id="subjectNameSelect" name="subjectName">
+                                    <option value="">-- Seleccionar Asignatura --</option>
+                                    <option th:each="subject : ${subjects}"
+                                            th:value="${subject.name}"
+                                            th:text="${subject.name}"
+                                            th:selected="${subject.name == selectedSubjectName}"></option>
+                                </select>
+                             </div>
+                        </div>
+
+                        <div class="col-md-4 col-lg-2">
+                            <label for="groupSelect" class="form-label">Número de Grupo:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-people"></i></span>
+                                <select class="form-select" id="groupSelect" name="groupId">
+                                    <option value="">-- Seleccionar Grupo --</option>
+                                    <option th:each="group : ${groups}"
+                                            th:value="${group.number}"
+                                            th:text="${group.number} + ' (' + ${group.semester} + ')'"
+                                            th:selected="${group.number != null and group.number.toString() == selectedGroupId}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 col-lg-4">
+                             <label for="professorSelect" class="form-label">Profesor:</label>
+                             <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <select class="form-select" id="professorSelect" name="professorId">
+                                    <option value="">-- Seleccionar Profesor --</option>
+                                    <option th:each="professor : ${professors}"
+                                            th:value="${professor.id}"
+                                            th:text="${professor.firstName} + ' ' + ${professor.lastName}"
+                                            th:selected="${professor.id == selectedProfessorId}"></option>
+                                </select>
+                             </div>
+                        </div>
+
+                        <div class="col-md-4 col-lg-2">
+                            <label for="semesterSelect" class="form-label">Semestre:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                <select class="form-select" id="semesterSelect" name="semester">
+                                    <option value="">-- Seleccionar Semestre --</option>
+                                    <option th:each="sem : ${semestersList}"
+                                            th:value="${sem}"
+                                            th:text="${sem}"
+                                            th:selected="${sem == selectedSemester}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 col-lg-4 d-flex justify-content-md-start justify-content-center mt-4">
+                            <button type="submit" class="btn btn-primary me-2 filter-btn">
+                                <i class="bi bi-search me-1"></i> Buscar/Filtrar
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary reset-btn" onclick="resetForm()">
+                                <i class="bi bi-x-circle me-1"></i> Reiniciar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card card-custom shadow-sm">
+            <div class="card-header card-header-custom">
+                <h3 class="h5 mb-0 fw-semibold">
+                    <i class="bi bi-clipboard-check card-title-icon"></i>
+                    Resultados
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">Código</th>
+                                <th>Asignatura</th>
+                                <th>Grupo</th>
+                                <th>Profesor</th>
+                                <th>Semestre</th>
+                                <th>Actividades</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="plan : ${evaluationPlans}" class="plan-row">
+                                <td class="px-3"><span class="fw-medium" th:text="${plan.subjectCode}">Código</span></td>
+                                <td th:text="${plan.subjectName}">Asignatura</td>
+                                <td th:text="${plan.groupId}">Grupo</td>
+                                <td th:text="${plan.professor}">Profesor</td>
+                                <td><span class="badge bg-light text-dark" th:text="${plan.semester}">Semestre</span></td>
+                                <td>
+                                    <div class="activities-list">
+                                        <div th:each="activity : ${plan.activities}" class="activity-item">
+                                            <span th:text="${activity.name}" class="activity-name">Actividad</span>
+                                            <div>
+                                                <span class="badge bg-primary" th:text="${activity.percentage} + '%'">Porcentaje</span>
+                                                <span class="badge bg-secondary" th:text="'Nota: ' + ${activity.grade}">Nota</span>
+                                            </div>
+                                        </div>
+                                        <div th:if="${plan.activities.empty}" class="text-muted fst-italic small">
+                                            No hay actividades registradas
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/evaluation-plans/{id}(id=${plan.id})}" class="btn btn-sm btn-outline-primary action-btn">
+                                        <i class="bi bi-eye me-1"></i> Ver Plan
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${evaluationPlans.empty}">
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="bi bi-search fs-2 d-block mb-3"></i>
+                                    No se encontraron planes de evaluación con los criterios seleccionados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 mt-auto bg-light text-center text-muted">
+        © 2025 Trackademic. Todos los derechos reservados.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script>
+        const subjectCodeInput = document.getElementById("subjectCodeInput");
+        if (subjectCodeInput) {
+            subjectCodeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
+
+        function resetForm() {
+            document.getElementById("subjectCodeInput").value = "";
+            document.getElementById("subjectNameSelect").value = "";
+            document.getElementById("groupSelect").value = "";
+            document.getElementById("professorSelect").value = "";
+            document.getElementById("semesterSelect").value = "";
+            document.getElementById("filterForm").submit();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+/* Status badge styling */
+.badge {
+    padding: 0.5rem 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-primary {
+    background-color: #0056b3 !important;
+}/* File: /Trackademic/src/main/resources/static/css/evaluation-plan-detail.css */
+
+.plan-detail-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.plan-details-container {
+    flex: 1;
+    min-width: 0; /* Prevent flex items from overflowing their container */
+}
+
+.comments-container {
+    width: 380px;
+    position: relative;
+}
+
+/* Comments Section Styling */
+.comments-wrapper {
+    position: sticky;
+    top: 2rem;
+}
+
+.comment-form {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.comment-list {
+    list-style: none;
+    padding: 0;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 0.75rem;
+}
+
+.comment-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+    margin-bottom: 0;
+    background-color: #ffffff;
+}
+
+.comment-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+}
+
+.comment-author {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #0056b3;
+}
+
+.comment-timestamp {
+    font-size: 0.8em;
+    color: #6c757d;
+}
+
+.comment-text {
+    margin-top: 0.5rem;
+    color: #212529;
+}
+
+.comments-count {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Activities styling */
+.activity-list-item {
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    border-left: 4px solid #0056b3;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.activity-list-item:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.activity-name {
+    font-weight: 600;
+    color: #0056b3;
+    font-size: 1.05rem;
+}
+
+.activity-percentage {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+/* Card header styling */
+.card-header-custom {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.25rem;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+}
+
+.card-title-icon {
+    margin-right: 0.5rem;
+    color: #0056b3;
+    font-size: 1.1rem;
+}
+
+/* Improved card styling */
+.detail-card, .activities-card {
+    max-width: 850px;
+    margin: 0 auto 1.5rem;
+}
+
+.detail-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Responsive layout */
+@media (max-width: 991.98px) {
+    .plan-detail-layout {
+        flex-direction: column;
+    }
+    
+    .comments-container {
+        width: 100%;
+        margin-top: 2rem;
+    }
+    
+    .comments-wrapper {
+        position: static;
+    }
+    
+    .comment-list {
+        max-height: none;
+    }
+    
+    .detail-card, .activities-card {
+        max-width: 100%;
+    }
+}
+
+/* Improve detail cards appearance */
+.detail-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.detail-value {
+    color: #212529;
+    font-size: 1.05rem;
+}
+
+/* No comments message styling */
+.no-comments-message {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    color: #6c757d;
+}
+
+/* Submit button styling */
+.comment-submit-btn {
+    background-color: #0056b3;
+    border-color: #004085;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.comment-submit-btn:hover {
+    background-color: #004085;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 64, 133, 0.2);
+}
