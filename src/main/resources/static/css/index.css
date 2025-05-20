@@ -1,0 +1,25 @@
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+h2, h3 {
+    letter-spacing: 0.05em;
+}
+
+ul li i {
+    vertical-align: middle;
+}
+
+.report-card {
+    background-color: #ffffff;
+    transition: box-shadow 0.3s ease;
+    cursor: default;
+}
+
+@media (max-width: 767.98px) {
+    main > .row > div {
+        text-align: center !important;
+    }
+}
