@@ -47,10 +47,37 @@ public class EvaluationPlanController {
     }
 
     @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("plan", new EvaluationPlan());
-        return "evaluation-plans/create";
-    }
+    public String showCreateForm(
+    @RequestParam(value = "subjectCode", required = false) String subjectCode,
+    Model model
+
+    ) {
+    
+    EvaluationPlan plan = new EvaluationPlan();
+    plan.setSubjectCode(subjectCode);
+    model.addAttribute("plan", plan);
+
+    
+    model.addAttribute("subjects", academicDataService.getAllSubjects());
+
+    // Si se seleccionó código, cargo los dropdowns dependientes
+    boolean hasSubj = StringUtils.hasText(subjectCode);
+    model.addAttribute("groups",    hasSubj
+        ? academicDataService.getGroupsBySubject(subjectCode, null)
+        : Collections.emptyList());
+    model.addAttribute("professors",hasSubj
+        ? academicDataService.getProfessorsBySubject(subjectCode, null)
+        : Collections.emptyList());
+    model.addAttribute("semestersList",hasSubj
+        ? academicDataService.getSemestersBySubject(subjectCode, null)
+        : Collections.emptyList());
+
+    // Para marcar la asignatura seleccionada en el <select>
+    model.addAttribute("selectedSubjectCode", subjectCode);
+
+    return "evaluation-plans/create";
+}
+
 
     @PostMapping("/create")
     public String create(@ModelAttribute("plan") EvaluationPlan plan) {
