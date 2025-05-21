@@ -2,10 +2,14 @@ package com.trackademic.controller.api;
 
 import com.trackademic.nosql.document.Comment;
 import com.trackademic.nosql.document.EvaluationPlan;
+import com.trackademic.postgresql.entity.Employee;
 import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.interfaces.EvaluationPlanService;
 import com.trackademic.service.AcademicDataService;
-import com.trackademic.service.interfaces.CommentService; // Import the new CommentService interface
+import com.trackademic.service.interfaces.CommentService;
+import com.trackademic.postgresql.entity.Group;
+import com.trackademic.postgresql.entity.Subject;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +21,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.util.StringUtils;
+import java.util.Collections; 
+
+
 
 @Controller
 @RequestMapping("/evaluation-plans")
@@ -74,71 +82,82 @@ public class EvaluationPlanController {
         return "redirect:/evaluation-plans";
     }
 
-      // Handles both initial page load (no params) and search form submission (with params)
     @GetMapping("/search")
     public String listEvaluationPlans(
             @RequestParam(value = "subjectCode", required = false) String subjectCode,
             @RequestParam(value = "subjectName", required = false) String subjectName,
             @RequestParam(value = "groupId", required = false) String groupId,
             @RequestParam(value = "professorId", required = false) String professorId,
-            @RequestParam(value = "semester", required = false) String semester, // Receive semester parameter
+            @RequestParam(value = "semester", required = false) String semester,
             Model model
     ) {
-        // --- Populate dropdowns from PostgreSQL ---
-        model.addAttribute("subjects", academicDataService.getAllSubjects());
-        model.addAttribute("groups", academicDataService.getAllGroups());
-        model.addAttribute("professors", academicDataService.getAllProfessors());
-        // Fetch semesters from PostgreSQL using the new method
-        model.addAttribute("semestersList", academicDataService.getAllSemestersFromPostgres()); // <--- Use the new method
 
-        // --- Add selected filter values back to the model for pre-selection ---
+        List<Subject> allSubjects = academicDataService.getAllSubjects();
+        model.addAttribute("subjects", allSubjects);
+
+
+        List<Group> groupsListForDropdown = Collections.emptyList();
+        List<Employee> professorsListForDropdown = Collections.emptyList();
+        List<String> semestersListForDropdown = Collections.emptyList();
+
+        boolean hasSubjectFilterInRequest = StringUtils.hasText(subjectCode) || StringUtils.hasText(subjectName);
+
+        if (hasSubjectFilterInRequest) {
+            groupsListForDropdown = academicDataService.getGroupsBySubject(subjectCode, subjectName);
+            professorsListForDropdown = academicDataService.getProfessorsBySubject(subjectCode, subjectName);
+            semestersListForDropdown = academicDataService.getSemestersBySubject(subjectCode, subjectName);
+        }
+
+        model.addAttribute("groups", groupsListForDropdown);
+        model.addAttribute("professors", professorsListForDropdown);
+        model.addAttribute("semestersList", semestersListForDropdown);
+
         model.addAttribute("selectedSubjectCode", subjectCode);
         model.addAttribute("selectedSubjectName", subjectName);
         model.addAttribute("selectedGroupId", groupId);
         model.addAttribute("selectedProfessorId", professorId);
-        model.addAttribute("selectedSemester", semester); // <--- Add selected semester
+        model.addAttribute("selectedSemester", semester);
 
-        // --- Perform the search using the dynamic service method ---
-        // Note: We are passing null for studentId here as per the search method's current design
         List<EvaluationPlan> evaluationPlans = evaluationPlanService.searchEvaluationPlans(
                 subjectCode,
                 subjectName,
                 groupId,
                 professorId,
-                semester // <--- Pass the semester parameter
+                semester
         );
         model.addAttribute("evaluationPlans", evaluationPlans);
 
-        return "evaluation-plans"; 
+
+        return "evaluation-plans";
     }
 
-     @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
+     @GetMapping("/{id}") 
     public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
 
         if (planOptional.isPresent()) {
             EvaluationPlan plan = planOptional.get();
-            model.addAttribute("plan", plan); // Add the found plan to the model
+            model.addAttribute("plan", plan);
 
-            // --- Fetch Comments for this plan using the new CommentService ---
+    
             List<Comment> comments = commentService.getCommentsByEvaluationPlanId(id);
-            model.addAttribute("comments", comments); // Add comments to the model
+            model.addAttribute("comments", comments);
 
             return "evaluation-plan-detail";
         } else {
             model.addAttribute("errorMessage", "Evaluation Plan with ID " + id + " not found.");
-            return "error-page"; // Redirect to an error page or handle as appropriate
+            return "error-page";
         }
     }
 
-     @PostMapping("/{id}/comments") // Maps to POST /evaluation-plans/{id}/comments
+     @PostMapping("/{id}/comments")
     public String addComment(
             @PathVariable("id") ObjectId id,
             @RequestParam("comment") String commentText,
             @AuthenticationPrincipal CustomUserDetail userDetail,
             RedirectAttributes redirectAttributes
     ) {
-        // Optional: Basic check if comment text is empty
+
         if (commentText == null || commentText.trim().isEmpty()) {
              redirectAttributes.addFlashAttribute("errorMessage", "Comment text cannot be empty.");
              return "redirect:/evaluation-plans/" + id;
@@ -153,11 +172,11 @@ public class EvaluationPlanController {
             commentService.addCommentToEvaluationPlan(id, studentName, commentText.trim()); 
             redirectAttributes.addFlashAttribute("successMessage", "Comment added successfully!");
 
-            // Redirect back to the evaluation plan detail page
+
             return "redirect:/evaluation-plans/" + id;
          } else {
              redirectAttributes.addFlashAttribute("errorMessage", "Could not add comment: Evaluation Plan not found.");
-             return "redirect:/evaluation-plans/search"; // Redirect to list or an error page
+             return "redirect:/evaluation-plans/search";
          }
     }
 

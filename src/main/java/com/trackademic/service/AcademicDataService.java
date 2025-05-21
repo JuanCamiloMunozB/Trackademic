@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.util.StringUtils;
 
 @Service 
 
@@ -67,5 +68,61 @@ public class AcademicDataService {
     public List<String> getAllSemestersFromPostgres() {
         return groupRepository.findDistinctSemesters();
     }
+
+    /**
+     * Retrieves Groups filtered by subject code or name. Prioritizes code if both provided.
+     * @param subjectCode Optional subject code.
+     * @param subjectName Optional subject name.
+     * @return A list of Group entities matching the subject.
+     */
+    public List<Group> getGroupsBySubject(String subjectCode, String subjectName) {
+        if (StringUtils.hasText(subjectCode)) {
+            return groupRepository.findBySubjectCode(subjectCode);
+        } else if (StringUtils.hasText(subjectName)) {
+            return groupRepository.findBySubjectSubjectName(subjectName);
+        }
+
+        return List.of();
+    }
+
+    /**
+     * Retrieves distinct semesters for Groups filtered by subject code or name. Prioritizes code.
+     * @param subjectCode Optional subject code.
+     * @param subjectName Optional subject name.
+     * @return A list of unique semester strings matching the subject.
+     */
+    public List<String> getSemestersBySubject(String subjectCode, String subjectName) {
+        if (StringUtils.hasText(subjectCode)) {
+            return groupRepository.findDistinctSemestersBySubjectCode(subjectCode);
+        } else if (StringUtils.hasText(subjectName)) {
+            return groupRepository.findDistinctSemestersBySubjectSubjectName(subjectName);
+        }
+        return List.of(); 
+    }
+
+    /**
+     * Retrieves distinct professors associated with Groups filtered by subject code or name. Prioritizes code.
+     * Fetches Employee entities based on distinct IDs from groups.
+     * @param subjectCode Optional subject code.
+     * @param subjectName Optional subject name.
+     * @return A list of unique Employee entities (professors) matching the subject.
+     */
+    public List<Employee> getProfessorsBySubject(String subjectCode, String subjectName) {
+        List<String> professorIds;
+        if (StringUtils.hasText(subjectCode)) {
+            professorIds = groupRepository.findDistinctProfessorIdsBySubjectCode(subjectCode);
+        } else if (StringUtils.hasText(subjectName)) {
+            professorIds = groupRepository.findDistinctProfessorIdsBySubjectSubjectName(subjectName);
+        } else {
+            return List.of(); 
+        }
+
+        if (professorIds.isEmpty()) {
+            return List.of(); 
+        }
+
+        return employeeRepository.findAllById(professorIds);
+    }
+
 
 }
