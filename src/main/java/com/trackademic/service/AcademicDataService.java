@@ -24,6 +24,10 @@ public class AcademicDataService {
     @Autowired
     private  EmployeeRepository employeeRepository; 
 
+    public Optional<Subject> getSubjectByCode(String code) {
+    return subjectRepository.findById(code);
+  }
+
 
     /**
      * Retrieves all Groups from PostgreSQL.

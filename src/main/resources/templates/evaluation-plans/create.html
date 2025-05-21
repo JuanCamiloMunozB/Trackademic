@@ -18,7 +18,7 @@
   <header class="py-3 border-bottom bg-white shadow-sm sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
       <h1 class="h4 text-primary fw-bold mb-0">Trackademic</h1>
-      <a th:href="@{/Trackacademic/evaluation-plans}" class="btn btn-sm btn-outline-secondary">
+      <a th:href="@{/evaluation-plans}" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i> Volver a la Lista
       </a>
     </div>
@@ -31,7 +31,7 @@
         <h2 class="h5 mb-0">Crear Nuevo Plan de Evaluación</h2>
       </div>
       <div class="card-body">
-        <form th:action="@{/Trackacademic/evaluation-plans/create}" th:object="${plan}" method="post" class="row g-4">
+        <form th:action="@{/evaluation-plans/create}" th:object="${plan}" method="post" class="row g-4">
 
           <!-- Asignatura y código -->
           <div class="col-md-6">
@@ -49,7 +49,11 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Código de Asignatura</label>
-            <input type="text" th:field="*{subjectCode}" id="subjectCode" class="form-control" readonly />
+            <!-- Mostrar el código sin hacer binding para evitar duplicados -->
+            <input type="text"
+                   th:value="${selectedSubjectCode}" 
+                   class="form-control" readonly disabled />
+            
           </div>
 
           <!-- Grupo, profesor y semestre -->
@@ -123,7 +127,7 @@
 
           <!-- Botones -->
           <div class="col-12 text-end">
-            <a th:href="@{/Trackacademic/evaluation-plans}" class="btn btn-outline-secondary me-2">Cancelar</a>
+            <a th:href="@{/evaluation-plans}" class="btn btn-outline-secondary me-2">Cancelar</a>
             <button type="submit" class="btn btn-primary">Guardar Plan</button>
           </div>
         </form>

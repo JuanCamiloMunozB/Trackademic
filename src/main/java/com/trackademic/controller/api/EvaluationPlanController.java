@@ -55,9 +55,16 @@ public class EvaluationPlanController {
     
     EvaluationPlan plan = new EvaluationPlan();
     plan.setSubjectCode(subjectCode);
+
+    if(StringUtils.hasText(subjectCode)){
+        academicDataService.getSubjectByCode(subjectCode)
+            .ifPresent(subject -> {
+                plan.setSubjectName(subject.getName());
+            });
+    }
     model.addAttribute("plan", plan);
 
-    
+    // Cargo todas las asignaturas
     model.addAttribute("subjects", academicDataService.getAllSubjects());
 
     // Si se seleccionó código, cargo los dropdowns dependientes
@@ -81,8 +88,9 @@ public class EvaluationPlanController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute("plan") EvaluationPlan plan) {
-        evaluationPlanService.createEvaluationPlan(plan);
-        return "redirect:/evaluation-plans";
+        academicDataService.getSubjectByCode(plan.getSubjectCode())
+        .ifPresent(s -> plan.setSubjectName(s.getName()));
+        return "redirect:/evaluation-plans/search";
     }
 
     
