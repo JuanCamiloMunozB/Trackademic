@@ -5,6 +5,7 @@ import com.trackademic.nosql.document.EvaluationPlan;
 import com.trackademic.postgresql.entity.Employee;
 import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.interfaces.EvaluationPlanService;
+import com.trackademic.service.interfaces.StudentPlanService;
 import com.trackademic.service.AcademicDataService;
 import com.trackademic.service.interfaces.CommentService;
 import com.trackademic.postgresql.entity.Group;
@@ -38,6 +39,9 @@ public class EvaluationPlanController {
 
     @Autowired
     private  CommentService commentService;
+
+    @Autowired
+    private  StudentPlanService studentPlanService;
 
   
     @GetMapping
@@ -216,4 +220,21 @@ public class EvaluationPlanController {
          }
     }
 
+    @PostMapping("/{id}/use")
+    public String usarPlanDeEvaluacion(
+        @PathVariable("id") ObjectId id,
+        @AuthenticationPrincipal CustomUserDetail userDetail,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // Aquí usamos el student_id (String), no el ObjectId
+            String studentId = userDetail.getId(); // ← Devuelve "2020101"
+            studentPlanService.usarPlan(studentId, id); // ← Primer argumento: String
+            redirectAttributes.addFlashAttribute("successMessage", "Plan agregado exitosamente a tus notas.");
+            return "redirect:/notas";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al usar plan: " + e.getMessage());
+            return "redirect:/evaluation-plans/" + id;
+        }
+    }
 }

@@ -11,6 +11,6 @@ public interface EvaluationPlanRepository
     extends MongoRepository<EvaluationPlan, ObjectId>, EvaluationPlanRepositoryCustom {
 
   List<EvaluationPlan> findByStudentId(ObjectId studentId);
-  Optional findById(ObjectId id);;
+  Optional<EvaluationPlan> findById(ObjectId id);  
 
 }

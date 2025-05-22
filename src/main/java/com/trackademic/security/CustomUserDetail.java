@@ -20,6 +20,11 @@ public class CustomUserDetail implements UserDetails {
         return Collections.emptyList();
     }
 
+    public String getId() {
+        return student.getStudentId();
+    }
+
+
     @Override
     public String getPassword() {
         return student.getPassword();

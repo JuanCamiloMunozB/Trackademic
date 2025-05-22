@@ -51,13 +51,6 @@
             <div class="card-body">
                 <form id="filterForm" method="get" th:action="@{/evaluation-plans/search}" class="filter-form">
                     <div class="row g-3 align-items-end">
-                        <div class="col-md-6 col-lg-3">
-                            <label for="subjectCodeInput" class="form-label">Código de Asignatura:</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                                <input type="text" class="form-control" id="subjectCodeInput" name="subjectCode" th:value="${selectedSubjectCode}" placeholder="Ingresar código" style="text-transform: uppercase;"/>
-                            </div>
-                        </div>
 
                         <div class="col-md-6 col-lg-3">
                              <label for="subjectNameSelect" class="form-label">Nombre de Asignatura:</label>
