@@ -88,10 +88,11 @@ public class EvaluationPlanController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute("plan") EvaluationPlan plan) {
-        academicDataService.getSubjectByCode(plan.getSubjectCode())
+    academicDataService.getSubjectByCode(plan.getSubjectCode())
         .ifPresent(s -> plan.setSubjectName(s.getName()));
-        return "redirect:/evaluation-plans/search";
-    }
+    evaluationPlanService.createEvaluationPlan(plan); 
+    return "redirect:/evaluation-plans/search";
+}
 
     
       @GetMapping("/edit/{id}")
