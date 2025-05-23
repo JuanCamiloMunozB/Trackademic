@@ -76,9 +76,11 @@
                                     <td th:text="${semester.semester}">Semestre</td>
                                     <td>
                                         <div th:each="act : ${plan.activities}" class="mb-1">
-                                            <span th:text="${act.name}" class="fw-medium"></span>
-                                            <span class="badge bg-primary" th:text="${act.percentage} + '%'">%</span>
-                                            <span class="badge bg-secondary" th:text="'Nota: ' + ${act.grade}">Nota</span>
+                                            <span th:text="${act.name}" class="fw-medium me-2"></span>
+                                            <span class="badge bg-primary me-1" th:text="${act.percentage} + '%'">%</span>
+
+                                            <span th:if="${act.grade == null}" class="badge bg-warning text-dark">Nota eliminada</span>
+                                            <span th:if="${act.grade != null}" class="badge bg-secondary" th:text="'Nota: ' + ${act.grade}"></span>
                                         </div>
                                     </td>
                                     <td class="text-center">
