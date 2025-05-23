@@ -170,7 +170,6 @@
                                             <span th:text="${activity.name}" class="activity-name">Actividad</span>
                                             <div>
                                                 <span class="badge bg-primary" th:text="${activity.percentage} + '%'">Porcentaje</span>
-                                                <span class="badge bg-secondary" th:text="'Nota: ' + ${activity.grade}">Nota</span>
                                             </div>
                                         </div>
                                         <div th:if="${plan.activities == null or plan.activities.empty}" class="text-muted fst-italic small">

@@ -91,12 +91,29 @@ public class EvaluationPlanController {
 
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("plan") EvaluationPlan plan) {
-    academicDataService.getSubjectByCode(plan.getSubjectCode())
-        .ifPresent(s -> plan.setSubjectName(s.getName()));
-    evaluationPlanService.createEvaluationPlan(plan); 
-    return "redirect:/evaluation-plans/search";
-}
+    public String create(@ModelAttribute("plan") EvaluationPlan plan,Model model) {
+        try {
+            academicDataService.getSubjectByCode(plan.getSubjectCode())
+                .ifPresent(s -> plan.setSubjectName(s.getName()));
+            evaluationPlanService.createEvaluationPlan(plan);
+            return "redirect:/evaluation-plans/search";
+
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+
+            // Re-poblar datos del formulario para que no se pierdan
+            model.addAttribute("subjects", academicDataService.getAllSubjects());
+            model.addAttribute("selectedSubjectCode", plan.getSubjectCode());
+
+            model.addAttribute("groups", academicDataService.getGroupsBySubject(plan.getSubjectCode(), null));
+            model.addAttribute("professors", academicDataService.getProfessorsBySubject(plan.getSubjectCode(), null));
+            model.addAttribute("semestersList", academicDataService.getSemestersBySubject(plan.getSubjectCode(), null));
+
+            return "evaluation-plans/create";
+        }
+    }
+
+
 
     
       @GetMapping("/edit/{id}")
