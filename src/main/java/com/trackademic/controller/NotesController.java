@@ -16,8 +16,8 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("/notas")
-public class NotasController {
+@RequestMapping("/notes")
+public class NotesController {
 
     @Autowired
     private SemesterService semesterService;
@@ -28,20 +28,18 @@ public class NotasController {
     }
     
     @GetMapping("")
-    public String verNotas(@AuthenticationPrincipal CustomUserDetail user,
+    public String seeNotes(@AuthenticationPrincipal CustomUserDetail user,
                         @RequestParam(value = "subjectName", required = false) String subjectName,
                         Model model) {
         String studentId = user.getId();
-        List<Semester> semestresOriginales = semesterService.obtenerSemestresPorEstudiante(studentId);
+        List<Semester> semestresOriginales = semesterService.getSemestersByStudent(studentId);
 
-        // Creamos una copia para mostrar (sin modificar los originales)
         List<Semester> semestresParaMostrar = semestresOriginales.stream().map(s -> {
             Semester copia = new Semester();
             copia.setId(s.getId());
             copia.setSemester(s.getSemester());
             copia.setStudentId(s.getStudentId());
 
-            // Filtrar solo si hay filtro activo
             if (subjectName != null && !subjectName.trim().isEmpty()) {
                 List<SubjectEvaluationPlan> filtradas = s.getSubjectsEvaluationPlan().stream()
                     .filter(p -> p.getSubjectName().equalsIgnoreCase(subjectName))
@@ -62,28 +60,28 @@ public class NotasController {
             .toList();
 
         model.addAttribute("semesters", semestresParaMostrar);
-        model.addAttribute("subjects", subjectNames); // para el menú desplegable
-        model.addAttribute("selectedSubjectName", subjectName); // para mantener la selección
+        model.addAttribute("subjects", subjectNames); 
+        model.addAttribute("selectedSubjectName", subjectName); 
 
-        return "notas";
+        return "notes";
     }
 
 
-    @GetMapping("/editar")
-    public String editarNotas(@RequestParam String semesterId,
+    @GetMapping("/edit")
+    public String editNotes(@RequestParam String semesterId,
                             @RequestParam String subjectCode,
                             Model model,
                             @AuthenticationPrincipal CustomUserDetail user) {
 
-        // Obtener el semestre usando el ID
-        Semester semestre = semesterService.obtenerSemestrePorId(semesterId);
+        
+        Semester semestre = semesterService.getSemesterById(semesterId);
 
         if (semestre == null) {
             model.addAttribute("errorMessage", "Semestre no encontrado.");
-            return "redirect:/notas";
+            return "redirect:/notes";
         }
 
-        // Buscar el plan de evaluación correspondiente al código de asignatura
+        
         List<SubjectEvaluationPlan> planes = semestre.getSubjectsEvaluationPlan();
         SubjectEvaluationPlan plan = planes.stream()
             .filter(p -> p.getSubjectCode().equals(subjectCode))
@@ -92,42 +90,38 @@ public class NotasController {
 
         if (plan == null) {
             model.addAttribute("errorMessage", "Asignatura no encontrada.");
-            return "redirect:/notas";
+            return "redirect:/notes";
         }
 
         int subjectIndex = planes.indexOf(plan);
 
-        // Agregar todos los datos necesarios al modelo
-        model.addAttribute("semesterId", semesterId);        // para usar en el formulario
-        model.addAttribute("subjectCode", subjectCode);      // para usar en el formulario
-        model.addAttribute("subjectIndex", subjectIndex);    // útil si usas índices
-        model.addAttribute("plan", plan);                    // contiene las actividades
+        
+        model.addAttribute("semesterId", semesterId);        
+        model.addAttribute("subjectCode", subjectCode);      
+        model.addAttribute("subjectIndex", subjectIndex);    
+        model.addAttribute("plan", plan);                   
 
-        return "editar_notas"; // Nombre del template Thymeleaf (editar_notas.html)
+        return "edit_notes"; 
     }
 
-
-
-
-
-    @PostMapping("/guardar")
+    @PostMapping("/save")
     public String guardarNotas(@RequestParam String semesterId,
                                 @RequestParam int subjectIndex,
                                 @ModelAttribute SubjectEvaluationPlan updatedPlan,
                                 RedirectAttributes redirectAttributes) {
-        semesterService.actualizarNotas(semesterId, subjectIndex, updatedPlan);
+        semesterService.updateNotes(semesterId, subjectIndex, updatedPlan);
         redirectAttributes.addFlashAttribute("successMessage", "Notas actualizadas correctamente.");
-        return "redirect:/notas";
+        return "redirect:/notes";
     }
 
-    @PostMapping("/eliminar")
+    @PostMapping("/delete")
     public String eliminarActividad(@RequestParam String semesterId,
                                     @RequestParam int subjectIndex,
                                     @RequestParam int activityIndex,
                                     RedirectAttributes redirectAttributes) {
-        semesterService.eliminarActividad(semesterId, subjectIndex, activityIndex);
+        semesterService.deleteActivity(semesterId, subjectIndex, activityIndex);
         redirectAttributes.addFlashAttribute("successMessage", "Actividad eliminada.");
-        return "redirect:/notas";
+        return "redirect:/notes";
     }
 }
 

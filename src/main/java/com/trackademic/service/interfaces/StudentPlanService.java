@@ -8,13 +8,12 @@ import java.util.List;
 
 public interface StudentPlanService {
 
-    // Cambiar ObjectId → String para que coincida con student.getStudentId()
-    void usarPlan(String studentId, ObjectId planId);
+    void usePlan(String studentId, ObjectId planId);
 
-    List<Semester> obtenerPlanes(String studentId);
+    List<Semester> getPlans(String studentId);
 
-    void actualizarNotas(String semesterId, String subjectCode, List<Double> grades);
+    void updateNotes(String semesterId, String subjectCode, List<Double> grades);
 
-    SubjectEvaluationPlan obtenerPlan(String semesterId, String subjectCode);
+    SubjectEvaluationPlan getPlan(String semesterId, String subjectCode);
 }
 

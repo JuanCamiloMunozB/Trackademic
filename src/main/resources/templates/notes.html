@@ -22,7 +22,7 @@
 <main class="container my-5">
     <h2 class="mb-4 fw-bold text-primary text-center">Mis Notas</h2>
 
-    <form th:action="@{/notas}" method="get" class="row g-3 mb-4">
+    <form th:action="@{/notes}" method="get" class="row g-3 mb-4">
         <div class="col-md-4">
             <label for="subjectNameSelect" class="form-label">Nombre de Asignatura</label>
             <select class="form-select" id="subjectNameSelect" name="subjectName">
@@ -62,35 +62,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="semester : ${semesters}">
-                            <td colspan="7" class="table-secondary" th:text="'Semestre: ' + ${semester.semester}"></td>
-                        </tr>
-
                         <th:block th:each="semester : ${semesters}">
-                            <th:block th:if="${semester.subjectsEvaluationPlan != null and !semester.subjectsEvaluationPlan.empty}">
-                                <tr th:each="plan : ${semester.subjectsEvaluationPlan}">
-                                    <td th:text="${plan.subjectCode}">Código</td>
-                                    <td th:text="${plan.subjectName}">Asignatura</td>
-                                    <td th:text="${plan.groupId}">Grupo</td>
-                                    <td th:text="${plan.professor}">Profesor</td>
-                                    <td th:text="${semester.semester}">Semestre</td>
-                                    <td>
-                                        <div th:each="act : ${plan.activities}" class="mb-1">
-                                            <span th:text="${act.name}" class="fw-medium me-2"></span>
-                                            <span class="badge bg-primary me-1" th:text="${act.percentage} + '%'">%</span>
+                            <tr>
+                                <td colspan="7" class="table-secondary fw-semibold" th:text="'Semestre: ' + ${semester.semester}"></td>
+                            </tr>
+                            <tr th:each="plan : ${semester.subjectsEvaluationPlan}">
+                                <td th:text="${plan.subjectCode}">Código</td>
+                                <td th:text="${plan.subjectName}">Asignatura</td>
+                                <td th:text="${plan.groupId}">Grupo</td>
+                                <td th:text="${plan.professor}">Profesor</td>
+                                <td th:text="${semester.semester}">Semestre</td>
+                                <td>
+                                    <div th:each="act : ${plan.activities}" class="mb-1">
+                                        <span th:text="${act.name}" class="fw-medium me-2"></span>
+                                        <span class="badge bg-primary me-1" th:text="${act.percentage} + '%'">%</span>
 
-                                            <span th:if="${act.grade == null}" class="badge bg-warning text-dark">Nota eliminada</span>
-                                            <span th:if="${act.grade != null}" class="badge bg-secondary" th:text="'Nota: ' + ${act.grade}"></span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <a th:href="@{/notas/editar(semesterId=${semester.id}, subjectCode=${plan.subjectCode})}" 
-                                           class="btn btn-sm btn-outline-success">
-                                            <i class="bi bi-pencil-square"></i> Modificar
-                                        </a>
-                                    </td>
-                                </tr>
-                            </th:block>
+                                        <span th:if="${act.grade == null}" class="badge bg-warning text-dark">Nota eliminada</span>
+                                        <span th:if="${act.grade != null}" class="badge bg-secondary" th:text="'Nota: ' + ${act.grade}"></span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/notes/edit(semesterId=${semester.id}, subjectCode=${plan.subjectCode})}" 
+                                       class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-pencil-square"></i> Modificar
+                                    </a>
+                                </td>
+                            </tr>
                         </th:block>
 
                         <tr th:if="${semesters == null or semesters.empty}">

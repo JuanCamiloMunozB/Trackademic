@@ -17,18 +17,18 @@ public class SemesterServiceImp implements SemesterService {
     private SemesterRepository semesterRepository;
 
     @Override
-    public List<Semester> obtenerSemestresPorEstudiante(String studentId) {
+    public List<Semester> getSemestersByStudent(String studentId) {
         return semesterRepository.findByStudentId(studentId);
     }
 
     @Override
-    public Semester obtenerSemestrePorId(String semesterId) {
+    public Semester getSemesterById(String semesterId) {
         return semesterRepository.findById(semesterId).orElse(null);
     }
 
 
     @Override
-    public void actualizarNotas(String semesterId, int subjectIndex, SubjectEvaluationPlan updatedPlan) {
+    public void updateNotes(String semesterId, int subjectIndex, SubjectEvaluationPlan updatedPlan) {
         Semester semester = semesterRepository.findById(semesterId)
                 .orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
 
@@ -52,7 +52,7 @@ public class SemesterServiceImp implements SemesterService {
 
 
     @Override
-    public void eliminarActividad(String semesterId, int subjectIndex, int activityIndex) {
+    public void deleteActivity(String semesterId, int subjectIndex, int activityIndex) {
         Semester semester = semesterRepository.findById(semesterId)
                 .orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
 

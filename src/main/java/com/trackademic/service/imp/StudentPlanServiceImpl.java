@@ -25,7 +25,7 @@ public class StudentPlanServiceImpl implements StudentPlanService {
     private SemesterRepository semesterRepository;
 
     @Override
-    public void usarPlan(String studentId, ObjectId planId) {
+    public void usePlan(String studentId, ObjectId planId) {
         EvaluationPlan plan = evaluationPlanRepository.findById(planId)
             .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
 
@@ -59,12 +59,12 @@ public class StudentPlanServiceImpl implements StudentPlanService {
     }
 
     @Override
-    public List<Semester> obtenerPlanes(String studentId) {
+    public List<Semester> getPlans(String studentId) {
         return semesterRepository.findByStudentId(studentId);
     }
 
     @Override
-    public void actualizarNotas(String semesterId, String subjectCode, List<Double> grades) {
+    public void updateNotes(String semesterId, String subjectCode, List<Double> grades) {
         Optional<Semester> optionalSem = semesterRepository.findById(semesterId);
         Semester sem = optionalSem.orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
 
@@ -81,7 +81,7 @@ public class StudentPlanServiceImpl implements StudentPlanService {
     }
 
     @Override
-    public SubjectEvaluationPlan obtenerPlan(String semesterId, String subjectCode) {
+    public SubjectEvaluationPlan getPlan(String semesterId, String subjectCode) {
         Optional<Semester> optionalSem = semesterRepository.findById(semesterId);
         Semester sem = optionalSem.orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
 

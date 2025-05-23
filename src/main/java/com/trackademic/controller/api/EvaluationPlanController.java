@@ -238,17 +238,16 @@ public class EvaluationPlanController {
     }
 
     @PostMapping("/{id}/use")
-    public String usarPlanDeEvaluacion(
+    public String useEvaluationPlan(
         @PathVariable("id") ObjectId id,
         @AuthenticationPrincipal CustomUserDetail userDetail,
         RedirectAttributes redirectAttributes
     ) {
         try {
-            // Aquí usamos el student_id (String), no el ObjectId
-            String studentId = userDetail.getId(); // ← Devuelve "2020101"
-            studentPlanService.usarPlan(studentId, id); // ← Primer argumento: String
+            String studentId = userDetail.getId(); 
+            studentPlanService.usePlan(studentId, id); 
             redirectAttributes.addFlashAttribute("successMessage", "Plan agregado exitosamente a tus notas.");
-            return "redirect:/notas";
+            return "redirect:/notes";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al usar plan: " + e.getMessage());
             return "redirect:/evaluation-plans/" + id;

@@ -13,7 +13,7 @@
 <header class="py-3 border-bottom bg-white shadow-sm sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
         <h1 class="h4 text-primary fw-bold mb-0">Trackademic</h1>
-        <a th:href="@{/notas}" class="btn btn-sm btn-outline-primary">
+        <a th:href="@{/notes}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-arrow-left me-1"></i> Volver a Notas
         </a>
     </div>
@@ -23,7 +23,7 @@
     <div class="card shadow-sm rounded-4 p-4 bg-white mx-auto" style="max-width: 700px;">
         <h2 class="mb-4 fw-bold text-center text-primary">Editar Notas</h2>
 
-        <form th:action="@{/notas/guardar}" method="post">
+        <form th:action="@{/notes/save}" method="post">
             <input type="hidden" th:name="semesterId" th:value="${semesterId}" />
             <input type="hidden" th:name="subjectIndex" th:value="${subjectIndex}" />
 

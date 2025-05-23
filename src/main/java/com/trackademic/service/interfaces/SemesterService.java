@@ -6,11 +6,11 @@ import com.trackademic.nosql.document.SubjectEvaluationPlan;
 import java.util.List;
 
 public interface SemesterService {
-    List<Semester> obtenerSemestresPorEstudiante(String studentId);
+    List<Semester> getSemestersByStudent(String studentId);
 
-    void actualizarNotas(String semesterId, int subjectIndex, SubjectEvaluationPlan updatedPlan);
+    void updateNotes(String semesterId, int subjectIndex, SubjectEvaluationPlan updatedPlan);
 
-    void eliminarActividad(String semesterId, int subjectIndex, int activityIndex);
+    void deleteActivity(String semesterId, int subjectIndex, int activityIndex);
 
-    Semester obtenerSemestrePorId(String semesterId);
+    Semester getSemesterById(String semesterId);
 }
