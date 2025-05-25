@@ -23,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.util.StringUtils;
+
+import java.nio.file.AccessDeniedException;
 import java.util.Collections; 
 
 
@@ -121,16 +123,42 @@ public class EvaluationPlanController {
         EvaluationPlan plan = evaluationPlanService.getEvaluationPlanById(id)
             .orElseThrow(() -> new IllegalArgumentException("Plan not found: " + id));
         model.addAttribute("plan", plan);
-        return "evaluation_plans/edit";
+        return "evaluation-plans/edit";
     }
 
    
-      @PostMapping("/edit")
-    public String update(@ModelAttribute("plan") EvaluationPlan plan) {
-        ObjectId id = plan.getId();
-        evaluationPlanService.updateEvaluationPlan(id, plan);
-        return "redirect:/evaluation-plans";
+     @PostMapping("/edit")
+public String update(
+    @ModelAttribute("plan") EvaluationPlan plan,               // viene id + activities
+    @AuthenticationPrincipal CustomUserDetail userDetail,
+    Model model,
+    RedirectAttributes flash
+) {
+    try {
+        
+        EvaluationPlan original = evaluationPlanService
+            .getEvaluationPlanById(plan.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Plan no encontrado"));
+
+        plan.setStudentId(original.getStudentId());
+        plan.setSubjectCode(original.getSubjectCode());
+        plan.setSubjectName(original.getSubjectName());
+        plan.setGroupId(original.getGroupId());
+        plan.setProfessor(original.getProfessor());
+        plan.setSemester(original.getSemester());
+
+       
+        evaluationPlanService.updateEvaluationPlan(plan.getId(), plan);
+        flash.addFlashAttribute("successMessage", "Plan actualizado correctamente.");
+        return "redirect:/evaluation-plans/my";
+
+    } catch (IllegalArgumentException ex) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("plan", plan);
+        return "evaluation-plans/edit";
     }
+}
+
 
     
     @GetMapping("/delete/{id}")
