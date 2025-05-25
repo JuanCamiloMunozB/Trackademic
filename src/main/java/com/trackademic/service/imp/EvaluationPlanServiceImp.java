@@ -66,6 +66,11 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
         evaluationPlanRepository.deleteById(id);
     }
 
+    @Override
+    public List<EvaluationPlan> getByStudentId(ObjectId studentId) {
+        return evaluationPlanRepository.findByStudentId(studentId);
+    }
+
     private void validatePercentages(EvaluationPlan plan) {
     double sum = plan.getActivities()
                      .stream()

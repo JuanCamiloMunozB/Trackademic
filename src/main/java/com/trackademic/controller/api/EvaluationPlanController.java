@@ -253,4 +253,29 @@ public class EvaluationPlanController {
             return "redirect:/evaluation-plans/" + id;
         }
     }
+
+    @GetMapping("/my")
+    public String listMyPlans(
+        @AuthenticationPrincipal CustomUserDetail userDetail,
+        Model model
+    ) {
+    String myId = userDetail.getId();
+
+    List<EvaluationPlan> misPlanes = evaluationPlanService.getAllEvaluationPlans().stream()
+        .filter(p -> p.getStudentId() != null)
+        .filter(p -> p.getStudentId().toHexString().equals(myId))
+        .toList();
+
+    model.addAttribute("plans", misPlanes);
+    return "evaluation-plans/my";
+}
+
+
+
+
+
+
+
+   
+
 }

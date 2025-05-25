@@ -14,4 +14,5 @@ public interface EvaluationPlanService {
   EvaluationPlan updateEvaluationPlan(ObjectId id , EvaluationPlan plan);
   void deleteEvaluationPlan(ObjectId id);
   List<EvaluationPlan> searchEvaluationPlans(String subjectCode, String subjectName, String groupId, String professorId, String semester);
+  List<EvaluationPlan> getByStudentId(ObjectId studentId);
 }
