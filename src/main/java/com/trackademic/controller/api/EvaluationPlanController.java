@@ -91,10 +91,11 @@ public class EvaluationPlanController {
 
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("plan") EvaluationPlan plan,Model model) {
+    public String create(@ModelAttribute("plan") EvaluationPlan plan, @AuthenticationPrincipal CustomUserDetail userDetail, Model model) {
         try {
             academicDataService.getSubjectByCode(plan.getSubjectCode())
                 .ifPresent(s -> plan.setSubjectName(s.getName()));
+            plan.setStudentId(new ObjectId(userDetail.getId()));
             evaluationPlanService.createEvaluationPlan(plan);
             return "redirect:/evaluation-plans/search";
 
@@ -112,7 +113,6 @@ public class EvaluationPlanController {
             return "evaluation-plans/create";
         }
     }
-
 
 
     
@@ -259,13 +259,8 @@ public class EvaluationPlanController {
         @AuthenticationPrincipal CustomUserDetail userDetail,
         Model model
     ) {
-    String myId = userDetail.getId();
-
-    List<EvaluationPlan> misPlanes = evaluationPlanService.getAllEvaluationPlans().stream()
-        .filter(p -> p.getStudentId() != null)
-        .filter(p -> p.getStudentId().toHexString().equals(myId))
-        .toList();
-
+    ObjectId myId = new ObjectId(userDetail.getId());
+    List<EvaluationPlan> misPlanes = evaluationPlanService.getByStudentId(myId);
     model.addAttribute("plans", misPlanes);
     return "evaluation-plans/my";
 }

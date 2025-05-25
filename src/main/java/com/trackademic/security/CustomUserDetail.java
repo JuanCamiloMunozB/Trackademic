@@ -21,7 +21,7 @@ public class CustomUserDetail implements UserDetails {
     }
 
     public String getId() {
-        return student.getStudentId();
+        return student.getId().toHexString();
     }
 
 
