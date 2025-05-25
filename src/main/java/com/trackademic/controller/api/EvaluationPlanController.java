@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.util.StringUtils;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collections; 
 
 
@@ -118,7 +117,7 @@ public class EvaluationPlanController {
 
 
     
-      @GetMapping("/edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") ObjectId id, Model model) {
         EvaluationPlan plan = evaluationPlanService.getEvaluationPlanById(id)
             .orElseThrow(() -> new IllegalArgumentException("Plan not found: " + id));
@@ -127,13 +126,13 @@ public class EvaluationPlanController {
     }
 
    
-     @PostMapping("/edit")
-public String update(
-    @ModelAttribute("plan") EvaluationPlan plan,               // viene id + activities
-    @AuthenticationPrincipal CustomUserDetail userDetail,
-    Model model,
-    RedirectAttributes flash
-) {
+    @PostMapping("/edit")
+    public String update(
+        @ModelAttribute("plan") EvaluationPlan plan,               
+        @AuthenticationPrincipal CustomUserDetail userDetail,
+        Model model,
+        RedirectAttributes flash
+    ) {
     try {
         
         EvaluationPlan original = evaluationPlanService
@@ -216,7 +215,7 @@ public String update(
         return "evaluation-plans";
     }
 
-     @GetMapping("/{id}") 
+    @GetMapping("/{id}") 
     public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
 
@@ -235,7 +234,7 @@ public String update(
         }
     }
 
-     @PostMapping("/{id}/comments")
+    @PostMapping("/{id}/comments")
     public String addComment(
             @PathVariable("id") ObjectId id,
             @RequestParam("comment") String commentText,
