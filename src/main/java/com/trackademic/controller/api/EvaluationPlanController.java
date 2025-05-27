@@ -1,12 +1,16 @@
 package com.trackademic.controller.api;
 
-import com.trackademic.nosql.document.Comment;
 import com.trackademic.nosql.document.EvaluationPlan;
+
 import com.trackademic.postgresql.entity.Employee;
+
+import com.trackademic.nosql.document.Comment;
+
 import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.interfaces.EvaluationPlanService;
 import com.trackademic.service.interfaces.StudentPlanService;
 import com.trackademic.service.AcademicDataService;
+
 import com.trackademic.service.interfaces.CommentService;
 import com.trackademic.postgresql.entity.Group;
 import com.trackademic.postgresql.entity.Subject;
@@ -16,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -28,18 +33,21 @@ import java.util.Collections;
 
 
 
+
+
 @Controller
-@RequestMapping("/evaluation-plans")
+@RequestMapping("/evaluation-plans") // Assuming this is the base path
 public class EvaluationPlanController {
 
     @Autowired
-    private  EvaluationPlanService evaluationPlanService;
+    private CommentService commentService;
+
+    @Autowired
+    private EvaluationPlanService evaluationPlanService;
 
     @Autowired
     private AcademicDataService academicDataService;
 
-    @Autowired
-    private  CommentService commentService;
 
     @Autowired
     private  StudentPlanService studentPlanService;
@@ -166,6 +174,7 @@ public class EvaluationPlanController {
         return "redirect:/evaluation-plans";
     }
 
+
     @GetMapping("/search")
     public String listEvaluationPlans(
             @RequestParam(value = "subjectCode", required = false) String subjectCode,
@@ -215,7 +224,8 @@ public class EvaluationPlanController {
         return "evaluation-plans";
     }
 
-    @GetMapping("/{id}") 
+
+    @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
     public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
 
@@ -234,7 +244,8 @@ public class EvaluationPlanController {
         }
     }
 
-    @PostMapping("/{id}/comments")
+
+    @PostMapping("/{id}/comments") // Maps to POST /evaluation-plans/{id}/comments
     public String addComment(
             @PathVariable("id") ObjectId id,
             @RequestParam("comment") String commentText,
@@ -290,9 +301,7 @@ public class EvaluationPlanController {
     List<EvaluationPlan> misPlanes = evaluationPlanService.getByStudentId(myId);
     model.addAttribute("plans", misPlanes);
     return "evaluation-plans/my";
-}
-
-
+    }
 
 
 
@@ -301,3 +310,4 @@ public class EvaluationPlanController {
    
 
 }
+
