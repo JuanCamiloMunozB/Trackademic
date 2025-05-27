@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-
 @Controller
 @RequestMapping("/notes")
 public class NotesController {
@@ -22,15 +21,10 @@ public class NotesController {
     @Autowired
     private SemesterService semesterService;
 
-    
-    public String getMethodName(@RequestParam String param) {
-        return new String();
-    }
-    
     @GetMapping("")
     public String seeNotes(@AuthenticationPrincipal CustomUserDetail user,
-                        @RequestParam(value = "subjectName", required = false) String subjectName,
-                        Model model) {
+                           @RequestParam(value = "subjectName", required = false) String subjectName,
+                           Model model) {
         String studentId = user.getId();
         List<Semester> semestresOriginales = semesterService.getSemestersByStudent(studentId);
 
@@ -48,7 +42,6 @@ public class NotesController {
             } else {
                 copia.setSubjectsEvaluationPlan(s.getSubjectsEvaluationPlan());
             }
-
             return copia;
         }).toList();
 
@@ -60,20 +53,17 @@ public class NotesController {
             .toList();
 
         model.addAttribute("semesters", semestresParaMostrar);
-        model.addAttribute("subjects", subjectNames); 
-        model.addAttribute("selectedSubjectName", subjectName); 
+        model.addAttribute("subjects", subjectNames);
+        model.addAttribute("selectedSubjectName", subjectName);
 
         return "notes";
     }
 
-
     @GetMapping("/edit")
     public String editNotes(@RequestParam String semesterId,
-                            @RequestParam String subjectCode,
-                            Model model,
-                            @AuthenticationPrincipal CustomUserDetail user) {
+                            @RequestParam String evaluationPlanId,
+                            Model model) {
 
-        
         Semester semestre = semesterService.getSemesterById(semesterId);
 
         if (semestre == null) {
@@ -81,47 +71,40 @@ public class NotesController {
             return "redirect:/notes";
         }
 
-        
-        List<SubjectEvaluationPlan> planes = semestre.getSubjectsEvaluationPlan();
-        SubjectEvaluationPlan plan = planes.stream()
-            .filter(p -> p.getSubjectCode().equals(subjectCode))
+        SubjectEvaluationPlan plan = semestre.getSubjectsEvaluationPlan().stream()
+            .filter(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId))
             .findFirst()
             .orElse(null);
 
         if (plan == null) {
-            model.addAttribute("errorMessage", "Asignatura no encontrada.");
+            model.addAttribute("errorMessage", "Plan no encontrado.");
             return "redirect:/notes";
         }
 
-        int subjectIndex = planes.indexOf(plan);
+        model.addAttribute("semesterId", semesterId);
+        model.addAttribute("evaluationPlanId", evaluationPlanId);
+        model.addAttribute("plan", plan);
 
-        
-        model.addAttribute("semesterId", semesterId);        
-        model.addAttribute("subjectCode", subjectCode);      
-        model.addAttribute("subjectIndex", subjectIndex);    
-        model.addAttribute("plan", plan);                   
-
-        return "edit_notes"; 
+        return "edit_notes";
     }
 
     @PostMapping("/save")
     public String guardarNotas(@RequestParam String semesterId,
-                                @RequestParam int subjectIndex,
-                                @ModelAttribute SubjectEvaluationPlan updatedPlan,
-                                RedirectAttributes redirectAttributes) {
-        semesterService.updateNotes(semesterId, subjectIndex, updatedPlan);
+                               @RequestParam String evaluationPlanId,
+                               @ModelAttribute SubjectEvaluationPlan updatedPlan,
+                               RedirectAttributes redirectAttributes) {
+        semesterService.updateNotes(semesterId, evaluationPlanId, updatedPlan);
         redirectAttributes.addFlashAttribute("successMessage", "Notas actualizadas correctamente.");
         return "redirect:/notes";
     }
 
     @PostMapping("/delete")
     public String eliminarActividad(@RequestParam String semesterId,
-                                    @RequestParam int subjectIndex,
+                                    @RequestParam String evaluationPlanId,
                                     @RequestParam int activityIndex,
                                     RedirectAttributes redirectAttributes) {
-        semesterService.deleteActivity(semesterId, subjectIndex, activityIndex);
+        semesterService.deleteActivity(semesterId, evaluationPlanId, activityIndex);
         redirectAttributes.addFlashAttribute("successMessage", "Actividad eliminada.");
         return "redirect:/notes";
     }
 }
-

@@ -8,9 +8,10 @@ import java.util.List;
 public interface SemesterService {
     List<Semester> getSemestersByStudent(String studentId);
 
-    void updateNotes(String semesterId, int subjectIndex, SubjectEvaluationPlan updatedPlan);
+    // Cambiado subjectIndex por evaluationPlanId
+    void updateNotes(String semesterId, String evaluationPlanId, SubjectEvaluationPlan updatedPlan);
 
-    void deleteActivity(String semesterId, int subjectIndex, int activityIndex);
+    void deleteActivity(String semesterId, String evaluationPlanId, int activityIndex);
 
     Semester getSemesterById(String semesterId);
 }

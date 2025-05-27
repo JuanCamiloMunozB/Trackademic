@@ -82,10 +82,11 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <a th:href="@{/notes/edit(semesterId=${semester.id}, subjectCode=${plan.subjectCode})}" 
-                                       class="btn btn-sm btn-outline-success">
+                                    <a th:href="@{/notes/edit(semesterId=${semester.id}, evaluationPlanId=${plan.evaluationPlanId.toHexString()})}" 
+                                        class="btn btn-sm btn-outline-success">
                                         <i class="bi bi-pencil-square"></i> Modificar
                                     </a>
+
                                 </td>
                             </tr>
                         </th:block>
