@@ -20,6 +20,11 @@ public class CustomUserDetail implements UserDetails {
         return Collections.emptyList();
     }
 
+    public String getId() {
+        return student.getId().toHexString();
+    }
+
+
     @Override
     public String getPassword() {
         return student.getPassword();

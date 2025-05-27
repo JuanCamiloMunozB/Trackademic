@@ -1,22 +1,30 @@
-package com.trackademic.service;
+package com.trackademic.service.imp;
 
-import com.trackademic.nosql.document.EvaluationPlan;
-import com.trackademic.nosql.repository.EvaluationPlanRepository;
-import com.trackademic.postgresql.entity.Employee;
+import java.util.List;
+import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Optional; // Keep Optional
-
-import org.bson.types.ObjectId;
+import com.trackademic.nosql.document.EvaluationPlan;
+import com.trackademic.nosql.repository.EvaluationPlanRepository;
+import com.trackademic.postgresql.entity.Employee;
+import com.trackademic.service.AcademicDataService;
+import com.trackademic.service.interfaces.EvaluationPlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
-public class EvaluationPlanService {
+public class EvaluationPlanServiceImp implements EvaluationPlanService {
+
+    private static final double EPS = 1e-6;
+
+    private static final Logger logger = LoggerFactory.getLogger(EvaluationPlanServiceImp.class);
+
 
     @Autowired
     private EvaluationPlanRepository evaluationPlanRepository;
@@ -24,17 +32,58 @@ public class EvaluationPlanService {
     @Autowired
     private AcademicDataService academicDataService;
 
-    private static final Logger logger = LoggerFactory.getLogger(EvaluationPlanService.class);
-
-    /**
-     * Retrieves all existing EvaluationPlan templates from MongoDB.
-     * @return A list of all EvaluationPlan documents.
-     */
+    @Override
     public List<EvaluationPlan> getAllEvaluationPlans() {
         return evaluationPlanRepository.findAll();
     }
 
-    /**
+    @Override
+    public Optional<EvaluationPlan> getEvaluationPlanById(ObjectId id) {
+        return evaluationPlanRepository.findById(id);
+    }
+
+    @Override
+    public EvaluationPlan createEvaluationPlan(EvaluationPlan plan) {
+         validatePercentages(plan);
+        return evaluationPlanRepository.save(plan);
+    }       
+
+    @Override
+    public EvaluationPlan updateEvaluationPlan(ObjectId id, EvaluationPlan plan) {
+        if (!evaluationPlanRepository.existsById(id)) {
+            throw new EntityNotFoundException("EvaluationPlan not found with id: " + id);
+        }
+        plan.setId(id);
+        validatePercentages(plan);
+        return evaluationPlanRepository.save(plan);
+    }
+
+    @Override
+    public void deleteEvaluationPlan(ObjectId id) {
+        if (!evaluationPlanRepository.existsById(id)) {
+            throw new EntityNotFoundException("The EvaluationPlan with id: " + id + " does not exist.");
+        }
+        evaluationPlanRepository.deleteById(id);
+    }
+
+    @Override
+    public List<EvaluationPlan> getByStudentId(ObjectId studentId) {
+        return evaluationPlanRepository.findByStudentId(studentId);
+    }
+
+    private void validatePercentages(EvaluationPlan plan) {
+    double sum = plan.getActivities()
+                     .stream()
+                     .mapToDouble(activity -> activity.getPercentage())
+                     .sum();
+        if (Math.abs(sum - 100.0) > EPS) {
+            throw new IllegalArgumentException(
+            String.format("The sum of percentages must be 100%%, but is %.2f%%", sum)
+            );
+        }
+    }
+
+      /**
      * Searches for EvaluationPlan templates based on various optional criteria.
      * Uses the dynamic query method for flexible filtering.
      * Allows filtering by subject code, subject name, group ID, professor ID (which is
@@ -77,10 +126,5 @@ public class EvaluationPlanService {
         );
 
     }
-
-    public Optional<EvaluationPlan> getEvaluationPlanById(ObjectId id) {
-        return evaluationPlanRepository.findById(id);
-    }
-
     
 }

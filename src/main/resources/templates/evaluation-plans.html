@@ -9,6 +9,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/evaluation-plans.css}" />
+    <style>
+        /* Clase para ocultar la sección de búsqueda avanzada */
+        .hidden-advanced-search {
+            display: none !important;
+        }
+         /* Clase para ocultar el botón de buscar cuando la sección avanzada está oculta */
+        .hidden-search-button {
+             display: none !important;
+        }
+    </style>
 </head>
 <body>
     <header class="py-3 border-bottom bg-white shadow-sm sticky-top">
@@ -41,13 +51,6 @@
             <div class="card-body">
                 <form id="filterForm" method="get" th:action="@{/evaluation-plans/search}" class="filter-form">
                     <div class="row g-3 align-items-end">
-                        <div class="col-md-6 col-lg-3">
-                            <label for="subjectCodeInput" class="form-label">Código de Asignatura:</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                                <input type="text" class="form-control" id="subjectCodeInput" name="subjectCode" th:value="${selectedSubjectCode}" placeholder="Ingresar código" style="text-transform: uppercase;"/>
-                            </div>
-                        </div>
 
                         <div class="col-md-6 col-lg-3">
                              <label for="subjectNameSelect" class="form-label">Nombre de Asignatura:</label>
@@ -63,56 +66,71 @@
                              </div>
                         </div>
 
-                        <div class="col-md-4 col-lg-2">
-                            <label for="groupSelect" class="form-label">Número de Grupo:</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-people"></i></span>
-                                <select class="form-select" id="groupSelect" name="groupId">
-                                    <option value="">-- Seleccionar Grupo --</option>
-                                    <option th:each="group : ${groups}"
-                                            th:value="${group.number}"
-                                            th:text="${group.number} + ' (' + ${group.semester} + ')'"
-                                            th:selected="${group.number != null and group.number.toString() == selectedGroupId}"></option>
-                                </select>
-                            </div>
-                        </div>
+                         <div class="col-md-6 col-lg-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100 filter-btn" id="searchButtonPrimary">
+                                <i class="bi bi-search me-1"></i> Buscar
+                            </button>
+                         </div>
 
-                        <div class="col-md-8 col-lg-4">
-                             <label for="professorSelect" class="form-label">Profesor:</label>
-                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <select class="form-select" id="professorSelect" name="professorId">
-                                    <option value="">-- Seleccionar Profesor --</option>
-                                    <option th:each="professor : ${professors}"
-                                            th:value="${professor.id}"
-                                            th:text="${professor.firstName} + ' ' + ${professor.lastName}"
-                                            th:selected="${professor.id == selectedProfessorId}"></option>
-                                </select>
+
+                        <div id="advancedSearchFilters"
+                             th:classappend="${#lists.isEmpty(groups) and #lists.isEmpty(professors) and #lists.isEmpty(semestersList)} ? 'hidden-advanced-search'"
+                             class="row g-3 align-items-end w-100 mx-0">
+  
+
+                             <div class="col-md-4 col-lg-2">
+                                 <label for="groupSelect" class="form-label">Número de Grupo:</label>
+                                 <div class="input-group">
+                                     <span class="input-group-text"><i class="bi bi-people"></i></span>
+                                     <select class="form-select" id="groupSelect" name="groupId">
+                                         <option value="">-- Seleccionar Grupo --</option>
+                                         <option th:each="group : ${groups}"
+                                                 th:value="${group.number}"
+                                                 th:text="${group.number} + ' (' + ${group.semester} + ')'"
+                                                 th:selected="${selectedGroupId != null and group.number != null and group.number.toString() == selectedGroupId}"></option>
+                                     </select>
+                                 </div>
                              </div>
+
+                             <div class="col-md-8 col-lg-4">
+                                  <label for="professorSelect" class="form-label">Profesor:</label>
+                                  <div class="input-group">
+                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                     <select class="form-select" id="professorSelect" name="professorId">
+                                         <option value="">-- Seleccionar Profesor --</option>
+                                         <option th:each="professor : ${professors}"
+                                                 th:value="${professor.id}"
+                                                 th:text="${professor.firstName} + ' ' + ${professor.lastName}"
+                                                 th:selected="${selectedProfessorId != null and professor.id == selectedProfessorId}"></option>
+                                     </select>
+                                  </div>
+                             </div>
+
+                             <div class="col-md-4 col-lg-2">
+                                 <label for="semesterSelect" class="form-label">Semestre:</label>
+                                 <div class="input-group">
+                                     <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                     <!-- Habilitado si la sección avanzada está visible -->
+                                     <select class="form-select" id="semesterSelect" name="semester">
+                                         <option value="">-- Seleccionar Semestre --</option>
+                                         <!-- Opciones pobladas por Thymeleaf con la lista `semestersList` -->
+                                         <option th:each="sem : ${semestersList}"
+                                                 th:value="${sem}"
+                                                 th:text="${sem}"
+                                                 th:selected="${selectedSemester != null and sem == selectedSemester}"></option>
+                                     </select>
+                                 </div>
+                             </div>
+
+
                         </div>
 
-                        <div class="col-md-4 col-lg-2">
-                            <label for="semesterSelect" class="form-label">Semestre:</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                                <select class="form-select" id="semesterSelect" name="semester">
-                                    <option value="">-- Seleccionar Semestre --</option>
-                                    <option th:each="sem : ${semestersList}"
-                                            th:value="${sem}"
-                                            th:text="${sem}"
-                                            th:selected="${sem == selectedSemester}"></option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-8 col-lg-4 d-flex justify-content-md-start justify-content-center mt-4">
-                            <button type="submit" class="btn btn-primary me-2 filter-btn">
-                                <i class="bi bi-search me-1"></i> Buscar/Filtrar
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary reset-btn" onclick="resetForm()">
+ 
+                         <div class="col-12 mt-3 text-md-start text-center">
+                             <button type="button" class="btn btn-outline-secondary reset-btn" onclick="resetForm()">
                                 <i class="bi bi-x-circle me-1"></i> Reiniciar
-                            </button>
-                        </div>
+                             </button>
+                         </div>
                     </div>
                 </form>
             </div>
@@ -152,10 +170,9 @@
                                             <span th:text="${activity.name}" class="activity-name">Actividad</span>
                                             <div>
                                                 <span class="badge bg-primary" th:text="${activity.percentage} + '%'">Porcentaje</span>
-                                                <span class="badge bg-secondary" th:text="'Nota: ' + ${activity.grade}">Nota</span>
                                             </div>
                                         </div>
-                                        <div th:if="${plan.activities.empty}" class="text-muted fst-italic small">
+                                        <div th:if="${plan.activities == null or plan.activities.empty}" class="text-muted fst-italic small">
                                             No hay actividades registradas
                                         </div>
                                     </div>
@@ -187,20 +204,84 @@
 
     <script>
         const subjectCodeInput = document.getElementById("subjectCodeInput");
+        const subjectNameSelect = document.getElementById("subjectNameSelect");
+        const advancedSearchFilters = document.getElementById("advancedSearchFilters");
+
+        const groupSelect = document.getElementById("groupSelect");
+        const professorSelect = document.getElementById("professorSelect");
+        const semesterSelect = document.getElementById("semesterSelect");
+
+        function shouldShowAdvancedFilters() {
+
+
+             const initialSubjectCode = subjectCodeInput.value.trim();
+             const initialSubjectName = subjectNameSelect.value.trim();
+             return initialSubjectCode.length > 0 || initialSubjectName.length > 0;
+        }
+
+
+        function setAdvancedFiltersState() {
+            const show = shouldShowAdvancedFilters();
+
+            if (show) {
+                advancedSearchFilters.classList.remove('hidden-advanced-search');
+                groupSelect.disabled = false;
+                professorSelect.disabled = false;
+                semesterSelect.disabled = false;
+                 document.getElementById("searchButtonPrimary").disabled = false;
+
+            } else {
+                advancedSearchFilters.classList.add('hidden-advanced-search');
+                 groupSelect.disabled = true;
+                 professorSelect.disabled = true;
+                 semesterSelect.disabled = true;
+
+                 groupSelect.value = "";
+                 professorSelect.value = "";
+                 semesterSelect.value = "";
+            }
+        }
+
+
+        function resetForm() {
+            subjectCodeInput.value = "";
+            subjectNameSelect.value = "";
+
+            setAdvancedFiltersState();
+            document.getElementById("filterForm").submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             subjectCodeInput.value = subjectCodeInput.value.toUpperCase();
+
+            setAdvancedFiltersState();
+        });
+
         if (subjectCodeInput) {
             subjectCodeInput.addEventListener('input', function() {
                 this.value = this.value.toUpperCase();
             });
         }
 
-        function resetForm() {
-            document.getElementById("subjectCodeInput").value = "";
-            document.getElementById("subjectNameSelect").value = "";
-            document.getElementById("groupSelect").value = "";
-            document.getElementById("professorSelect").value = "";
-            document.getElementById("semesterSelect").value = "";
-            document.getElementById("filterForm").submit();
-        }
+         function toggleSearchButton() {
+             const subjectCode = subjectCodeInput.value.trim();
+             const subjectName = subjectNameSelect.value.trim();
+             const isSubjectPresent = subjectCode.length > 0 || subjectName.length > 0;
+             document.getElementById("searchButtonPrimary").disabled = !isSubjectPresent;
+         }
+
+         if (subjectCodeInput) {
+            subjectCodeInput.addEventListener('input', toggleSearchButton);
+         }
+         if (subjectNameSelect) {
+            subjectNameSelect.addEventListener('change', toggleSearchButton);
+         }
+
+          document.addEventListener('DOMContentLoaded', () => {
+             toggleSearchButton();
+         });
+
+
     </script>
 
 </body>

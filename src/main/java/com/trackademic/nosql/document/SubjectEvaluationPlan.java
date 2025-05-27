@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.*;
 
-/** subdocumento embebido en Semester */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +26,7 @@ public class SubjectEvaluationPlan {
   private String groupId;
 
   private String professor;
+
 
   private List<Activity> activities;
 }

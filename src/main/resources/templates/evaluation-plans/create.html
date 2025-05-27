@@ -1,0 +1,164 @@
+<!-- File: src/main/resources/templates/evaluation-plans/create.html -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Crear Plan de Evaluación</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        crossorigin="anonymous"/>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/evaluation-plans.css}" />
+</head>
+<body>
+<header class="py-3 border-bottom bg-white shadow-sm sticky-top">
+  <div class="container d-flex justify-content-between align-items-center">
+    <h1 class="h4 text-primary fw-bold mb-0">Trackademic</h1>
+    <a th:href="@{/evaluation-plans/search}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Volver a la Lista
+    </a>
+  </div>
+</header>
+
+<main class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-header card-header-custom d-flex align-items-center">
+      <i class="bi bi-file-earmark-plus-fill card-title-icon"></i>
+      <h2 class="h5 mb-0">Crear Nuevo Plan de Evaluación</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- Mensaje de error -->
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+      <form th:action="@{/evaluation-plans/create}" th:object="${plan}" method="post" class="row g-4">
+
+        <!-- Asignatura y código -->
+        <div class="col-md-6">
+          <label for="subjectSelect" class="form-label">Asignatura</label>
+          <select id="subjectSelect"
+                  th:field="*{subjectCode}"
+                  th:onchange="location.href='?subjectCode=' + this.value"
+                  class="form-select filter-form" required>
+            <option value="">-- Seleccionar Asignatura --</option>
+            <option th:each="s : ${subjects}"
+                    th:value="${s.code}"
+                    th:text="${s.name}"
+                    th:selected="${s.code == selectedSubjectCode}"></option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Código de Asignatura</label>
+          <input type="text" th:value="${selectedSubjectCode}" class="form-control" readonly disabled />
+        </div>
+
+        <!-- Grupo, profesor y semestre -->
+        <div class="col-md-4">
+          <label class="form-label">Grupo</label>
+          <select th:field="*{groupId}" class="form-select filter-form" required>
+            <option value="">-- Seleccionar Grupo --</option>
+            <option th:each="g : ${groups}"
+                    th:value="${g.number}"
+                    th:text="${g.number + ' (' + g.semester + ')'}"
+                    th:selected="${g.number.toString() == selectedGroupId}"></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Profesor</label>
+          <select th:field="*{professor}" class="form-select filter-form" required>
+            <option value="">-- Seleccionar Profesor --</option>
+            <option th:each="p : ${professors}"
+                    th:value="${p.firstName + ' ' + p.lastName}"
+                    th:text="${p.firstName + ' ' + p.lastName}"
+                    th:selected="${p.id == selectedProfessorId}"></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Semestre</label>
+          <select th:field="*{semester}" class="form-select filter-form" required>
+            <option value="">-- Seleccionar Semestre --</option>
+            <option th:each="sem : ${semestersList}"
+                    th:value="${sem}"
+                    th:text="${sem}"
+                    th:selected="${sem == selectedSemester}"></option>
+          </select>
+        </div>
+
+        <!-- Actividades -->
+        <div class="col-12">
+          <h4 class="fw-semibold">Actividades</h4>
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre</th>
+                <th style="width:120px;">Peso (%)</th>
+                <th style="width:50px;"></th>
+              </tr>
+            </thead>
+            <tbody id="activitiesBody">
+              <tr th:each="act, stat : *{activities}" class="activity-item">
+                <td>
+                  <input type="text"
+                         th:field="*{activities[__${stat.index}__].name}"
+                         class="form-control" placeholder="Ej: Parcial" required/>
+                </td>
+                <td>
+                  <div class="input-group">
+                    <input type="number" step="0.01"
+                           th:field="*{activities[__${stat.index}__].percentage}"
+                           class="form-control" placeholder="30" required/>
+                    <span class="input-group-text">%</span>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-row">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" id="addActivityBtn" class="btn btn-outline-primary btn-sm mt-2">
+            + Agregar Actividad
+          </button>
+        </div>
+
+        <!-- Botones -->
+        <div class="col-12 text-end">
+          <a th:href="@{/evaluation-plans/search}" class="btn btn-outline-secondary me-2">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  const tbl = document.getElementById('activitiesBody');
+  document.getElementById('addActivityBtn').addEventListener('click', () => {
+    const idx = tbl.children.length;
+    const tr = document.createElement('tr');
+    tr.classList.add('activity-item');
+    tr.innerHTML = `
+      <td><input type="text" name="activities[${idx}].name" class="form-control" placeholder="Ej: Parcial" required/></td>
+      <td><div class="input-group">
+            <input type="number" step="0.01" name="activities[${idx}].percentage" class="form-control" placeholder="30" required/>
+            <span class="input-group-text">%</span>
+          </div></td>
+      <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger remove-row">&times;</button></td>
+    `;
+    tbl.append(tr);
+  });
+
+  tbl.addEventListener('click', e => {
+    if (e.target.matches('.remove-row')) {
+      e.target.closest('tr').remove();
+      Array.from(tbl.children).forEach((tr,i) => {
+        tr.querySelector('input[name$=".name"]').name = `activities[${i}].name`;
+        tr.querySelector('input[name$=".percentage"]').name = `activities[${i}].percentage`;
+      });
+    }
+  });
+</script>
+</body>
+</html>
