@@ -1,80 +1,43 @@
 package com.trackademic.controller.api;
 
-import com.trackademic.nosql.document.Comment;
 import com.trackademic.nosql.document.EvaluationPlan;
+import com.trackademic.nosql.document.Comment;
 import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.interfaces.EvaluationPlanService;
 import com.trackademic.service.AcademicDataService;
 import com.trackademic.service.interfaces.CommentService; // Import the new CommentService interface
-
-import java.util.List;
-import java.util.Optional;
-
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.bson.types.ObjectId;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+import java.util.Optional;
+
+
+
+import java.util.List;
+
+import java.util.Optional; // Import Optional
+
+
 @Controller
-@RequestMapping("/evaluation-plans")
+@RequestMapping("/evaluation-plans") // Assuming this is the base path
 public class EvaluationPlanController {
 
     @Autowired
-    private  EvaluationPlanService evaluationPlanService;
+    private CommentService commentService;
+
+    @Autowired
+    private EvaluationPlanService evaluationPlanService;
 
     @Autowired
     private AcademicDataService academicDataService;
 
-    @Autowired
-    private  CommentService commentService;
-
-  
-    @GetMapping
-    public String listAll(Model model) {
-        model.addAttribute("plans", evaluationPlanService.getAllEvaluationPlans());
-        return "evaluation-plans";
-    }
-
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("plan", new EvaluationPlan());
-        return "evaluation-plans/create";
-    }
-
-    @PostMapping("/create")
-    public String create(@ModelAttribute("plan") EvaluationPlan plan) {
-        evaluationPlanService.createEvaluationPlan(plan);
-        return "redirect:/evaluation-plans";
-    }
-
-    
-      @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") ObjectId id, Model model) {
-        EvaluationPlan plan = evaluationPlanService.getEvaluationPlanById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Plan not found: " + id));
-        model.addAttribute("plan", plan);
-        return "evaluation_plans/edit";
-    }
-
-   
-      @PostMapping("/edit")
-    public String update(@ModelAttribute("plan") EvaluationPlan plan) {
-        ObjectId id = plan.getId();
-        evaluationPlanService.updateEvaluationPlan(id, plan);
-        return "redirect:/evaluation-plans";
-    }
-
-    
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") ObjectId id) {
-        evaluationPlanService.deleteEvaluationPlan(id);
-        return "redirect:/evaluation-plans";
-    }
-
-      // Handles both initial page load (no params) and search form submission (with params)
+    // Handles both initial page load (no params) and search form submission (with params)
     @GetMapping("/search")
     public String listEvaluationPlans(
             @RequestParam(value = "subjectCode", required = false) String subjectCode,
@@ -112,7 +75,7 @@ public class EvaluationPlanController {
         return "evaluation-plans"; 
     }
 
-     @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
+    @GetMapping("/{id}") // Maps to /evaluation-plans/{id}
     public String viewEvaluationPlanDetail(@PathVariable("id") ObjectId id, Model model) {
         Optional<EvaluationPlan> planOptional = evaluationPlanService.getEvaluationPlanById(id);
 
@@ -131,7 +94,8 @@ public class EvaluationPlanController {
         }
     }
 
-     @PostMapping("/{id}/comments") // Maps to POST /evaluation-plans/{id}/comments
+
+    @PostMapping("/{id}/comments") // Maps to POST /evaluation-plans/{id}/comments
     public String addComment(
             @PathVariable("id") ObjectId id,
             @RequestParam("comment") String commentText,
@@ -162,3 +126,4 @@ public class EvaluationPlanController {
     }
 
 }
+
