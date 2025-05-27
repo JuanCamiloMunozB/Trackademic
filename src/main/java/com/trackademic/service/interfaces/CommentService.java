@@ -20,10 +20,17 @@ public interface CommentService {
     /**
      * Saves a new comment for a specific EvaluationPlan.
      *
-     * @param planId The ObjectId of the evaluation plan.
+     * @param planId      The ObjectId of the evaluation plan.
      * @param studentName The name of the student making the comment.
      * @param commentText The content of the comment.
      * @return The saved Comment object.
      */
     Comment addCommentToEvaluationPlan(ObjectId planId, String studentName, String commentText);
+
+    /**
+     * Deletes a comment by its ID.
+     *
+     * @param commentId The ObjectId of the comment to delete.
+     */
+    void deleteComment(ObjectId commentId);
 }
