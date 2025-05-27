@@ -21,6 +21,8 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -172,6 +174,8 @@ public class EvaluationPlanController {
             @RequestParam(value = "groupId", required = false) String groupId,
             @RequestParam(value = "professorId", required = false) String professorId,
             @RequestParam(value = "semester", required = false) String semester,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
             Model model) {
 
         List<Subject> allSubjects = academicDataService.getAllSubjects();
@@ -199,13 +203,19 @@ public class EvaluationPlanController {
         model.addAttribute("selectedProfessorId", professorId);
         model.addAttribute("selectedSemester", semester);
 
-        List<EvaluationPlan> evaluationPlans = evaluationPlanService.searchEvaluationPlans(
+        Page<EvaluationPlan> evaluationPlansPage = evaluationPlanService.searchEvaluationPlans(
                 subjectCode,
                 subjectName,
                 groupId,
                 professorId,
-                semester);
-        model.addAttribute("evaluationPlans", evaluationPlans);
+                semester,
+                PageRequest.of(page, size));
+
+        model.addAttribute("evaluationPlans", evaluationPlansPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", evaluationPlansPage.getTotalPages());
+        model.addAttribute("totalItems", evaluationPlansPage.getTotalElements());
+        model.addAttribute("pageSize", size);
 
         return "evaluation-plans";
     }
