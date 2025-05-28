@@ -20,22 +20,23 @@ public class ReportController {
     @Autowired
     private SemesterRepository semesterRepository;
 
-    
+    // Pantalla de selección de tipo de reporte
     @GetMapping("/reportes")
     public String reportSelection() {
         return "report-selection";
     }
 
-   
+    // Consolidado de notas por semestre
     @GetMapping("/reportes/consolidado")
     public String showSemesterReport(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam(value = "semester", required = false) String semester,
             Model model
     ) {
-        String studentId = userDetail.getStudent().getStudentId();
+        // Usar el mismo studentId que en "Mis Notas"
+        String studentId = userDetail.getId();
 
-       
+        // Solo los semestres del usuario (los mismos que ve en "Mis Notas")
         List<Semester> semesters = semesterRepository.findByStudentId(studentId);
         List<String> semesterNames = new ArrayList<>();
         for (Semester s : semesters) {
@@ -43,7 +44,6 @@ public class ReportController {
         }
         Collections.sort(semesterNames, Collections.reverseOrder());
 
-       
         if (semester == null && !semesterNames.isEmpty()) {
             semester = semesterNames.get(0);
         }
@@ -58,7 +58,7 @@ public class ReportController {
             }
         }
 
-       
+        // Calcular promedio final del semestre como promedio de definitivas (parciales o totales) de cada materia
         Double finalAverage = null;
         if (selectedSemester != null) {
             double sumDefinitivas = 0;
@@ -67,12 +67,11 @@ public class ReportController {
                 double definitivaMateria = 0;
                 double porcentajeAcumulado = 0;
                 for (Activity act : plan.getActivities()) {
-                    if (act.getGrade() > 0) {
+                    if (act.getGrade() != null) { // Ahora cuenta notas 0 como válidas
                         definitivaMateria += act.getGrade() * act.getPercentage() / 100.0;
                         porcentajeAcumulado += act.getPercentage();
                     }
                 }
-               
                 if (porcentajeAcumulado > 0) {
                     sumDefinitivas += definitivaMateria;
                     totalMaterias++;
@@ -89,16 +88,17 @@ public class ReportController {
         return "semester-report";
     }
 
-   
+    // Informe de progreso por asignatura
     @GetMapping("/reportes/progreso")
     public String showProgressReport(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam(value = "semester", required = false) String semester,
             Model model
     ) {
-        String studentId = userDetail.getStudent().getStudentId();
+        // Usar el mismo studentId que en "Mis Notas"
+        String studentId = userDetail.getId();
 
-        
+        // Solo los semestres del usuario (los mismos que ve en "Mis Notas")
         List<Semester> semesters = semesterRepository.findByStudentId(studentId);
         List<String> semesterNames = new ArrayList<>();
         for (Semester s : semesters) {
@@ -106,7 +106,6 @@ public class ReportController {
         }
         Collections.sort(semesterNames, Collections.reverseOrder());
 
-      
         if (semester == null && !semesterNames.isEmpty()) {
             semester = semesterNames.get(0);
         }
@@ -121,9 +120,8 @@ public class ReportController {
             }
         }
 
-        double passingGrade = 3.0; 
+        double passingGrade = 3.0; // Umbral de aprobación
 
-        
         List<Map<String, Object>> progressList = new ArrayList<>();
 
         if (selectedSemester != null) {
@@ -134,7 +132,7 @@ public class ReportController {
                 List<Map<String, Object>> pendingActivities = new ArrayList<>();
 
                 for (Activity act : plan.getActivities()) {
-                    if (act.getGrade() > 0) {
+                    if (act.getGrade() != null) { // Ahora cuenta notas 0 como válidas
                         accumulated += act.getGrade() * act.getPercentage() / 100.0;
                         accumulatedPercent += act.getPercentage();
                     } else {
@@ -146,11 +144,9 @@ public class ReportController {
                     }
                 }
 
-
                 double requiredInPending = 0;
                 if (pendingPercent > 0) {
                     requiredInPending = (passingGrade - accumulated) * 100.0 / pendingPercent;
-                    
                     if (requiredInPending < 0) requiredInPending = 0;
                     if (requiredInPending > 5) requiredInPending = 5;
                 }
