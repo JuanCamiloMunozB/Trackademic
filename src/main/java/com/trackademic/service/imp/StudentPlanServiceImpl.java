@@ -37,7 +37,10 @@ public class StudentPlanServiceImpl implements StudentPlanService {
             .orElse(new Semester(null, studentId, plan.getSemester(), new ArrayList<>()));
 
         boolean yaUsado = semester.getSubjectsEvaluationPlan().stream()
-            .anyMatch(p -> p.getEvaluationPlanId().equals(planId));
+            .anyMatch(p ->
+                p.getEvaluationPlanId().equals(planId) &&
+                sameContent(p.getActivities(), plan.getActivities())
+            );
 
         if (yaUsado) throw new IllegalStateException("Este plan ya fue usado.");
 
@@ -57,6 +60,35 @@ public class StudentPlanServiceImpl implements StudentPlanService {
         semester.getSubjectsEvaluationPlan().add(planPersonal);
         semesterRepository.save(semester);
     }
+
+   private boolean sameContent(List<Activity> a1, List<Activity> a2) {
+        if (a1.size() != a2.size()) return false;
+
+        for (int i = 0; i < a1.size(); i++) {
+            Activity act1 = a1.get(i);
+            Activity act2 = a2.get(i);
+
+            // Comparar nombres, permitiendo ambos null o ambos iguales
+            String name1 = act1.getName();
+            String name2 = act2.getName();
+
+            if ((name1 == null && name2 != null) || (name1 != null && !name1.equals(name2))) {
+                return false;
+            }
+
+            // Comparar porcentajes
+            Double percentage1 = act1.getPercentage();
+            Double percentage2 = act2.getPercentage();
+
+            if ((percentage1 == null && percentage2 != null) || 
+                (percentage1 != null && Double.compare(percentage1, percentage2) != 0)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     @Override
     public List<Semester> getPlans(String studentId) {
