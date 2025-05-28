@@ -31,7 +31,7 @@ Aplicación Spring Boot para gestionar planes de evaluación, notas académicas 
 ![Diagrama relacional](docs/models/RelationalModel.jpeg)
 
 ### Modelo de Documentos (MongoDB)
-![Diagrama de documentos](docs/models/MongoModel.jpeg)
+![Diagrama de documentos](docs/models/MongoModel.jpg)
 
 ## ⚙ Configuración y Acceso a Bases de Datos
 
