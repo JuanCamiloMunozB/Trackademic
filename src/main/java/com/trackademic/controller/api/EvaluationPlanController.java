@@ -14,6 +14,7 @@ import com.trackademic.service.AcademicDataService;
 import com.trackademic.service.interfaces.CommentService;
 import com.trackademic.postgresql.entity.Group;
 import com.trackademic.postgresql.entity.Subject;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -162,9 +163,14 @@ public class EvaluationPlanController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") ObjectId id) {
-        evaluationPlanService.deleteEvaluationPlan(id);
-        return "redirect:/evaluation-plans";
+    public String delete(@PathVariable("id") ObjectId id, RedirectAttributes redirectAttributes) {
+        try {
+            evaluationPlanService.deleteEvaluationPlan(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Plan eliminado exitosamente.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "No se pudo eliminar el plan: " + e.getMessage());
+        }
+        return "redirect:/evaluation-plans/my";
     }
 
     @GetMapping("/search")
