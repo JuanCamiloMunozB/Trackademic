@@ -40,9 +40,9 @@
                     <div class="mb-3">
                         <span class="fw-semibold">Nota acumulada:</span>
                         <span th:text="${#numbers.formatDecimal(progress.accumulated, 0, 2)}"></span>
-                        <span class="text-muted">/ <span th:text="${passingGrade}"></span></span>
+                        <span class="text-muted">/ 5.0</span>
                         <span class="ms-3 fw-semibold">Porcentaje completado:</span>
-                        <span th:text="${#numbers.formatDecimal(progress.accumulatedPercent, 0, 1)} + '%'"></span>
+                        <span th:text="${#numbers.formatDecimal(progress.accumulatedPercent, 0, 1)} + '%' "></span>
                     </div>
                     <div th:if="${progress.pendingPercent > 0}">
                         <span class="fw-semibold">Porcentaje pendiente:</span>
