@@ -77,7 +77,7 @@
                                         <span th:text="${act.name}" class="fw-medium me-2"></span>
                                         <span class="badge bg-primary me-1" th:text="${act.percentage} + '%'">%</span>
 
-                                        <span th:if="${act.grade == null}" class="badge bg-warning text-dark">Nota eliminada</span>
+                                        <span th:if="${act.grade == null}" class="badge bg-warning text-dark">Sin calificar</span>
                                         <span th:if="${act.grade != null}" class="badge bg-secondary" th:text="'Nota: ' + ${act.grade}"></span>
                                     </div>
                                 </td>

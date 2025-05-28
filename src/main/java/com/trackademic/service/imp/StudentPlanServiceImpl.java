@@ -49,7 +49,7 @@ public class StudentPlanServiceImpl implements StudentPlanService {
         ObjectId nuevoId = new ObjectId();
 
         List<Activity> actividades = plan.getActivities().stream()
-            .map(a -> new Activity(a.getName(), 0.0, a.getPercentage()))
+            .map(a -> new Activity(a.getName(), null, a.getPercentage()))
             .toList();
 
         SubjectEvaluationPlan planPersonal = new SubjectEvaluationPlan(
