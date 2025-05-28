@@ -161,11 +161,24 @@ public class EvaluationPlanController {
             return "redirect:/evaluation-plans/my";
 
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("plan", plan);
-            return "evaluation-plans/edit";
-        }
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("plan", plan);
+
+        // repobla tus selects…
+        model.addAttribute("subjects", academicDataService.getAllSubjects());
+        model.addAttribute("groups", academicDataService.getGroupsBySubject(plan.getSubjectCode(), null));
+        model.addAttribute("professors", academicDataService.getProfessorsBySubject(plan.getSubjectCode(), null));
+        model.addAttribute("semestersList", academicDataService.getSemestersBySubject(plan.getSubjectCode(), null));
+
+        // ← Aquí es donde añadimos comments de nuevo
+        model.addAttribute(
+          "comments",
+          commentService.getCommentsByEvaluationPlanId(plan.getId())
+        );
+
+        return "evaluation-plans/edit";
     }
+}
 
 
     @GetMapping("/delete/{id}")
