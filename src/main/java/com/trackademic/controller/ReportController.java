@@ -20,20 +20,20 @@ public class ReportController {
     @Autowired
     private SemesterRepository semesterRepository;
 
-    // Pantalla de selección de tipo de reporte
+   
     @GetMapping("/reportes")
     public String reportSelection() {
         return "report-selection";
     }
 
-    // Consolidado de notas por semestre
+  
     @GetMapping("/reportes/consolidado")
     public String showSemesterReport(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam(value = "semester", required = false) String semester,
             Model model
     ) {
-        // Usar el mismo studentId que en "Mis Notas"
+        
         String studentId = userDetail.getId();
 
         // Solo los semestres del usuario (los mismos que ve en "Mis Notas")
@@ -58,7 +58,7 @@ public class ReportController {
             }
         }
 
-        // Calcular promedio final del semestre como promedio de definitivas (parciales o totales) de cada materia
+        
         Double finalAverage = null;
         if (selectedSemester != null) {
             double sumDefinitivas = 0;
@@ -67,7 +67,7 @@ public class ReportController {
                 double definitivaMateria = 0;
                 double porcentajeAcumulado = 0;
                 for (Activity act : plan.getActivities()) {
-                    if (act.getGrade() != null) { // Ahora cuenta notas 0 como válidas
+                    if (act.getGrade() != null) { 
                         definitivaMateria += act.getGrade() * act.getPercentage() / 100.0;
                         porcentajeAcumulado += act.getPercentage();
                     }
@@ -88,17 +88,17 @@ public class ReportController {
         return "semester-report";
     }
 
-    // Informe de progreso por asignatura
+   
     @GetMapping("/reportes/progreso")
     public String showProgressReport(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam(value = "semester", required = false) String semester,
             Model model
     ) {
-        // Usar el mismo studentId que en "Mis Notas"
+        
         String studentId = userDetail.getId();
 
-        // Solo los semestres del usuario (los mismos que ve en "Mis Notas")
+        
         List<Semester> semesters = semesterRepository.findByStudentId(studentId);
         List<String> semesterNames = new ArrayList<>();
         for (Semester s : semesters) {
@@ -120,7 +120,7 @@ public class ReportController {
             }
         }
 
-        double passingGrade = 3.0; // Umbral de aprobación
+        double passingGrade = 3.0; 
 
         List<Map<String, Object>> progressList = new ArrayList<>();
 
