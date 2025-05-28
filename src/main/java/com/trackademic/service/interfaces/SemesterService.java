@@ -14,4 +14,6 @@ public interface SemesterService {
     void deleteActivity(String semesterId, String evaluationPlanId, int activityIndex);
 
     Semester getSemesterById(String semesterId);
+
+    void deleteEvaluationPlan(String semesterId, String evaluationPlanId);
 }

@@ -86,7 +86,14 @@
                                         class="btn btn-sm btn-outline-success">
                                         <i class="bi bi-pencil-square"></i> Modificar
                                     </a>
-
+                                    <form th:action="@{/notes/delete-plan}" method="post" class="d-inline" 
+                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar este plan de evaluación?');">
+                                        <input type="hidden" name="semesterId" th:value="${semester.id}">
+                                        <input type="hidden" name="evaluationPlanId" th:value="${plan.evaluationPlanId.toHexString()}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </th:block>

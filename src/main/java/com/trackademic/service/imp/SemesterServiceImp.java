@@ -34,15 +34,14 @@ public class SemesterServiceImp implements SemesterService {
         List<SubjectEvaluationPlan> subjectPlans = semester.getSubjectsEvaluationPlan();
 
         SubjectEvaluationPlan originalPlan = subjectPlans.stream()
-            .filter(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
+                .filter(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
 
         // Actualizamos sólo las notas de las actividades
         for (int i = 0; i < originalPlan.getActivities().size(); i++) {
             originalPlan.getActivities().get(i).setGrade(
-                updatedPlan.getActivities().get(i).getGrade()
-            );
+                    updatedPlan.getActivities().get(i).getGrade());
         }
 
         semesterRepository.save(semester);
@@ -56,9 +55,9 @@ public class SemesterServiceImp implements SemesterService {
         List<SubjectEvaluationPlan> subjectPlans = semester.getSubjectsEvaluationPlan();
 
         SubjectEvaluationPlan plan = subjectPlans.stream()
-            .filter(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
+                .filter(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
 
         if (plan.getActivities() != null && activityIndex >= 0 && activityIndex < plan.getActivities().size()) {
             plan.getActivities().remove(activityIndex);
@@ -66,5 +65,21 @@ public class SemesterServiceImp implements SemesterService {
         } else {
             throw new RuntimeException("Índice de actividad inválido");
         }
+    }
+
+    @Override
+    public void deleteEvaluationPlan(String semesterId, String evaluationPlanId) {
+        Semester semester = semesterRepository.findById(semesterId)
+                .orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
+
+        List<SubjectEvaluationPlan> subjectPlans = semester.getSubjectsEvaluationPlan();
+
+        boolean removed = subjectPlans.removeIf(p -> p.getEvaluationPlanId().toHexString().equals(evaluationPlanId));
+
+        if (!removed) {
+            throw new RuntimeException("Plan de evaluación no encontrado");
+        }
+
+        semesterRepository.save(semester);
     }
 }
