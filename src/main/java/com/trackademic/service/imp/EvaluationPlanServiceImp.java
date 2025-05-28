@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,7 +27,6 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluationPlanServiceImp.class);
 
-
     @Autowired
     private EvaluationPlanRepository evaluationPlanRepository;
 
@@ -44,9 +45,9 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
 
     @Override
     public EvaluationPlan createEvaluationPlan(EvaluationPlan plan) {
-         validatePercentages(plan);
+        validatePercentages(plan);
         return evaluationPlanRepository.save(plan);
-    }       
+    }
 
     @Override
     public EvaluationPlan updateEvaluationPlan(ObjectId id, EvaluationPlan plan) {
@@ -72,37 +73,39 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
     }
 
     private void validatePercentages(EvaluationPlan plan) {
-    double sum = plan.getActivities()
-                     .stream()
-                     .mapToDouble(activity -> activity.getPercentage())
-                     .sum();
+        double sum = plan.getActivities()
+                .stream()
+                .mapToDouble(activity -> activity.getPercentage())
+                .sum();
         if (Math.abs(sum - 100.0) > EPS) {
             throw new IllegalArgumentException(
-            String.format("The sum of percentages must be 100%%, but is %.2f%%", sum)
-            );
+                    String.format("The sum of percentages must be 100%%, but is %.2f%%", sum));
         }
     }
 
-      /**
+    /**
      * Searches for EvaluationPlan templates based on various optional criteria.
      * Uses the dynamic query method for flexible filtering.
-     * Allows filtering by subject code, subject name, group ID, professor ID (which is
+     * Allows filtering by subject code, subject name, group ID, professor ID (which
+     * is
      * converted to professor name for the Mongo query), and semester.
      *
      * @param subjectCode Optional subject code to filter by.
      * @param subjectName Optional subject name to filter by.
      * @param groupId     Optional group ID (number) to filter by.
-     * @param professorId Optional professor ID (PostgreSQL Employee ID) to filter by.
-     * @param semester    Optional semester to filter by. // Added semester parameter
+     * @param professorId Optional professor ID (PostgreSQL Employee ID) to filter
+     *                    by.
+     * @param semester    Optional semester to filter by. // Added semester
+     *                    parameter
      * @return A list of matching EvaluationPlan templates.
      */
-    public List<EvaluationPlan> searchEvaluationPlans(
+    public Page<EvaluationPlan> searchEvaluationPlans(
             String subjectCode,
             String subjectName,
             String groupId,
             String professorId,
-            String semester // Added semester parameter
-    ) {
+            String semester,
+            Pageable pageable) {
 
         String professorName = null;
         if (StringUtils.hasText(professorId)) {
@@ -122,9 +125,8 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
                 subjectName,
                 groupId,
                 professorName,
-                semester
-        );
-
+                semester,
+                pageable);
     }
-    
+
 }
