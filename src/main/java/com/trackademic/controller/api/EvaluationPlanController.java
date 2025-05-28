@@ -9,6 +9,9 @@ import com.trackademic.nosql.document.Comment;
 import com.trackademic.security.CustomUserDetail;
 import com.trackademic.service.interfaces.EvaluationPlanService;
 import com.trackademic.service.interfaces.StudentPlanService;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.trackademic.service.AcademicDataService;
 
 import com.trackademic.service.interfaces.CommentService;
@@ -162,6 +165,7 @@ public class EvaluationPlanController {
             return "evaluation-plans/edit";
         }
     }
+
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable("id") ObjectId id) {

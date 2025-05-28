@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.trackademic.nosql.document.Activity;
 import com.trackademic.nosql.document.EvaluationPlan;
 import com.trackademic.nosql.repository.EvaluationPlanRepository;
 import com.trackademic.postgresql.entity.Employee;
@@ -80,16 +81,23 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
         return evaluationPlanRepository.findByStudentId(studentId);
     }
 
-    private void validatePercentages(EvaluationPlan plan) {
-        double sum = plan.getActivities()
-                .stream()
-                .mapToDouble(activity -> activity.getPercentage())
-                .sum();
-        if (Math.abs(sum - 100.0) > EPS) {
-            throw new IllegalArgumentException(
-                    String.format("The sum of percentages must be 100%%, but is %.2f%%", sum));
+   private void validatePercentages(EvaluationPlan plan) {
+    List<Activity> activities = plan.getActivities();
+    if (activities == null || activities.isEmpty()) {
+        throw new IllegalArgumentException(
+            "You should provide at least one activity with a percentage."
+            );
+        }
+    double sum = activities.stream()
+                           .mapToDouble(Activity::getPercentage)
+                           .sum();
+    if (Math.abs(sum - 100.0) > EPS) {
+        throw new IllegalArgumentException(
+            String.format("The sum of percentages must be 100%%, but is %.2f%%.", sum)
+            );
         }
     }
+
 
     /**
      * Searches for EvaluationPlan templates based on various optional criteria.
