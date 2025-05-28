@@ -106,6 +106,8 @@ public class EvaluationPlanController {
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
 
+            model.addAttribute("plan", plan);
+
             // Re-poblar datos del formulario para que no se pierdan
             model.addAttribute("subjects", academicDataService.getAllSubjects());
             model.addAttribute("selectedSubjectCode", plan.getSubjectCode());

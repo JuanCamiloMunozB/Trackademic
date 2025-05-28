@@ -24,4 +24,9 @@ public interface EvaluationPlanRepository
       String professor,
       String semester,
       Pageable pageable);
+
+ // Con 'findFirst' sólo devolvemos uno, aunque haya varios
+Optional<EvaluationPlan> findFirstByGroupIdAndSemester(String groupId, String semester);
+
+
 }

@@ -46,6 +46,14 @@ public class EvaluationPlanServiceImp implements EvaluationPlanService {
     @Override
     public EvaluationPlan createEvaluationPlan(EvaluationPlan plan) {
         validatePercentages(plan);
+
+        Optional<EvaluationPlan> existing =
+        evaluationPlanRepository.findFirstByGroupIdAndSemester(plan.getGroupId(), plan.getSemester());
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException(
+                    String.format("An EvaluationPlan with groupId '%s' and semester '%s' already exists.",
+                            plan.getGroupId(), plan.getSemester()));
+        }
         return evaluationPlanRepository.save(plan);
     }
 
