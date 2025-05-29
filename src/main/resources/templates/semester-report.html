@@ -51,9 +51,9 @@
                             <tbody>
                                 <tr th:each="act : ${plan.activities}">
                                     <td th:text="${act.name}"></td>
-                                    <td th:text="${#numbers.formatDecimal(act.percentage, 0, 1)} + '%'"></td>
-                                    <td th:text="${#numbers.formatDecimal(act.grade, 0, 2)}"></td>
-                                    <td th:text="${#numbers.formatDecimal(act.grade * act.percentage / 100.0, 0, 2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(act.percentage, 0, 1)} + '%' "></td>
+                                    <td th:text="${act.grade == null ? 'Sin calificación' : #numbers.formatDecimal(act.grade, 0, 2)}"></td>
+                                    <td th:text="${act.grade == null ? '-' : #numbers.formatDecimal(act.grade * act.percentage / 100.0, 0, 2)}"></td>
                                 </tr>
                             </tbody>
                         </table>
