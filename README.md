@@ -17,7 +17,6 @@ Aplicación Spring Boot para gestionar planes de evaluación, notas académicas 
 - **Persistencia Poliglota**: 
   - **PostgreSQL**: Datos estructurados (empleados, facultades, grupos).
   - **MongoDB**: Datos semi-estructurados (planes de evaluación, comentarios, semestres).
-- **Analisis de Requerimientos**: Los puedes encontrar en [docs/requirements.md](docs/requirements.md).
 - **Documentacion Detallada**: Lo puedes encontrar en [docs/Documentacion Proyecto final SIDII](docs/Documentación%20Proyecto%20final%20SIDII.pdf).
 
 ## 🛠 Tecnologías Utilizadas
