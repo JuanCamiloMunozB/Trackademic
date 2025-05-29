@@ -9,8 +9,8 @@ Aplicación Spring Boot para gestionar planes de evaluación, notas académicas 
 ## 👥 Equipo de Desarrollo
 - **Juan David Acevedo**
 - **Jose Manuel Cardona**
-- **Andres Chamorro**
-- **Oscar Muñoz**
+- **Ricardo Andrés Chamorro**
+- **Oscar Stiven Muñoz**
 - **Juan Camilo Muñoz**
 
 ## 📌 Características Principales
@@ -26,6 +26,8 @@ Aplicación Spring Boot para gestionar planes de evaluación, notas académicas 
 - **Despliegue**: Bases de datos alojadas en MongoDB Atlas y Railway (PostgreSQL).
 
 ## 🗄 Modelado de Datos
+
+Aqui puedes ver anexado ambos modelos utilizados en el proyecto:  
 
 ### Modelo Relacional (PostgreSQL)
 ![Diagrama relacional](docs/models/RelationalModel.jpeg)
